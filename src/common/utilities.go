@@ -1,26 +1,12 @@
 package common
 
 import (
-	"encoding/hex"
 	"math/big"
 )
 
 func StringToMyHash(s string) *Hash {
 	var result Hash
 	copy(result[:], s)
-	return &result
-}
-
-func StringToHexMyHash(s string) *Hash {
-	if len(s) != 32 {
-		panic("StringToMyHash: s is not 32 bytes long")
-	}
-	var result Hash
-	data, err := hex.DecodeString(s)
-	if err != nil {
-		panic(err)
-	}
-	copy(result[:], data)
 	return &result
 }
 

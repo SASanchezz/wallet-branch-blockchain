@@ -1,8 +1,7 @@
 package main
 
 import (
-	"math/big"
-	"wallet-branch-blockchain/src"
+	"fmt"
 	"wallet-branch-blockchain/src/bootstrap"
 	"wallet-branch-blockchain/src/common"
 	"wallet-branch-blockchain/src/transaction"
@@ -11,22 +10,10 @@ import (
 func main() {
 	bootstrap.LoadEnv()
 
-	if transaction.GetTransaction(src.GenesisTxHash) == nil {
-		bootstrap.CreateGenesisBlock()
-	}
+	hash := common.StringToMyHash("f963525f16b863cc488d963e39062b6cb4f63cdd0ea97fb0c7bf585444efe676")
+	transaction := transaction.GetTransaction(hash)
 
-	gas := uint64(1)
-	nonce := uint64(7)
-	transactionArgs := transaction.TransactionArgs{
-		From:                 &common.Address{0x02},
-		To:                   &common.Address{0x03},
-		Gas:                  &gas,
-		GasPrice:             big.NewInt(3),
-		MaxFeePerGas:         big.NewInt(4),
-		MaxPriorityFeePerGas: big.NewInt(5),
-		Value:                big.NewInt(6),
-		Nonce:                &nonce,
-	}
-	newTransaction := transaction.GenerateTransaction(transactionArgs)
-	transaction.SaveTransaction(newTransaction)
+	fmt.Println(transaction)
+
+	// generateTransaction()
 }
