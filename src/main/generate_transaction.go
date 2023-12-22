@@ -25,6 +25,6 @@ func generateTransaction() {
 		Value:                big.NewInt(6),
 		Nonce:                &nonce,
 	}
-	newTransaction := transaction.GenerateTransaction(transactionArgs)
+	newTransaction := transaction.GenerateTransaction(&transactionArgs)
 	transaction.SaveTransaction(newTransaction)
 }

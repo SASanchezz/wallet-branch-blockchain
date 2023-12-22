@@ -13,7 +13,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j/dbtype"
 )
 
-func saveTransaction(transactionData tx_queries.Transaction, withRelationship bool) {
+func saveTransaction(transactionData *tx_queries.Transaction, withRelationship bool) {
 	ctx := context.Background()
 	driver := database.Connect()
 	session := driver.NewSession(ctx, neo4j.SessionConfig{})
@@ -34,6 +34,37 @@ func saveTransaction(transactionData tx_queries.Transaction, withRelationship bo
 			src.GenesisTxHash,
 			transactionData.Hash,
 			core.GetBranchKey(transactionData.From, transactionData.To))
+	}
+
+	err = dbTransaction.Commit(ctx)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func saveTransactions(transactionsData *[]*tx_queries.Transaction, withRelationship bool) {
+	ctx := context.Background()
+	driver := database.Connect()
+	session := driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+
+	dbTransaction, err := session.BeginTransaction(ctx, func(*neo4j.TransactionConfig) {})
+	defer dbTransaction.Close(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, transactionData := range *transactionsData {
+		tx_queries.SaveTransactionQuery(dbTransaction, transactionData)
+		if withRelationship && *transactionData.ParentHash != *src.GenesisTxHash {
+			tx_queries.CreateRelationshipQuery(dbTransaction, transactionData.ParentHash, transactionData.Hash)
+		} else if withRelationship {
+			tx_queries.CreateBranchRelationshipQuery(
+				dbTransaction,
+				src.GenesisTxHash,
+				transactionData.Hash,
+				core.GetBranchKey(transactionData.From, transactionData.To))
+		}
 	}
 
 	err = dbTransaction.Commit(ctx)

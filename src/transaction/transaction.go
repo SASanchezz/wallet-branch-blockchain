@@ -6,7 +6,7 @@ import (
 	"wallet-branch-blockchain/src/transaction/tx_queries"
 )
 
-func GenerateTransaction(transactionArgs TransactionArgs) tx_queries.Transaction {
+func GenerateTransaction(transactionArgs *TransactionArgs) *tx_queries.Transaction {
 	branchKey := core.GetBranchKey(transactionArgs.From, transactionArgs.To)
 	lastTransaction, err := GetLastTransaction(branchKey)
 	if err != nil {
@@ -32,11 +32,25 @@ func GenerateTransaction(transactionArgs TransactionArgs) tx_queries.Transaction
 
 	transaction.Hash = core.GetHash(&transaction)
 
-	return transaction
+	return &transaction
 }
 
-func SaveTransaction(transactionData tx_queries.Transaction) {
+func GenerateTransactions(transactionArgs *[]*TransactionArgs) *[]*tx_queries.Transaction {
+	resultTransactions := make([]*tx_queries.Transaction, len((*transactionArgs)[:]))
+
+	for i, transactionArg := range *transactionArgs {
+		resultTransactions[i] = GenerateTransaction(transactionArg)
+	}
+
+	return &resultTransactions
+}
+
+func SaveTransaction(transactionData *tx_queries.Transaction) {
 	saveTransaction(transactionData, true)
+}
+
+func SaveTransactions(transactionsDatas *[]*tx_queries.Transaction) {
+	saveTransactions(transactionsDatas, true)
 }
 
 func GetLastTransaction(branchKey *common.BranchKey) (*tx_queries.TransactionData, error) {
