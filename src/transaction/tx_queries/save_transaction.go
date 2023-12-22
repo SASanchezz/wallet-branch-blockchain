@@ -7,7 +7,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func SaveTransactionQuery(dbTransaction neo4j.ExplicitTransaction, transactionData Transaction) {
+func SaveTransactionQuery(dbTransaction neo4j.ExplicitTransaction, transactionData *Transaction) {
 	ctx := context.Background()
 
 	query := "MERGE (t:Transaction { " +
@@ -24,12 +24,12 @@ func SaveTransactionQuery(dbTransaction neo4j.ExplicitTransaction, transactionDa
 	params := map[string]interface{}{
 		"hash":                 transactionData.Hash.ToString(),
 		"parentHash":           transactionData.ParentHash.ToString(),
-		"gas":                  transactionData.Gas,
+		"gas":                  int64(*transactionData.Gas),
 		"gasPrice":             transactionData.GasPrice.String(),
 		"maxFeePerGas":         transactionData.MaxFeePerGas.String(),
 		"maxPriorityFeePerGas": transactionData.MaxPriorityFeePerGas.String(),
 		"value":                transactionData.Value.String(),
-		"nonce":                transactionData.Nonce,
+		"nonce":                int64(*transactionData.Nonce),
 	}
 	result, err := dbTransaction.Run(ctx, query, params)
 	if err != nil {
