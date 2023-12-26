@@ -11,7 +11,7 @@ import (
 func GetTransaction(dbTransaction neo4j.ManagedTransaction, txHash *common.Hash) *neo4j.Record {
 	ctx := context.Background()
 	params := map[string]interface{}{
-		"hash": string(txHash[:]),
+		"hash": txHash.ToString(),
 	}
 	query := "MATCH (t:Transaction {hash: toString($hash)}) RETURN t"
 

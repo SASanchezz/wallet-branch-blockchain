@@ -7,8 +7,7 @@ import (
 )
 
 func GenerateTransaction(transactionArgs *TransactionArgs) *tx_queries.Transaction {
-	branchKey := core.GetBranchKey(transactionArgs.From, transactionArgs.To)
-	lastTransaction, err := GetLastTransaction(branchKey)
+	lastTransaction, err := GetLastTransaction(transactionArgs.From, transactionArgs.To)
 	if err != nil {
 		panic(err)
 	}
@@ -35,26 +34,12 @@ func GenerateTransaction(transactionArgs *TransactionArgs) *tx_queries.Transacti
 	return &transaction
 }
 
-func GenerateTransactions(transactionArgs *[]*TransactionArgs) *[]*tx_queries.Transaction {
-	resultTransactions := make([]*tx_queries.Transaction, len((*transactionArgs)[:]))
-
-	for i, transactionArg := range *transactionArgs {
-		resultTransactions[i] = GenerateTransaction(transactionArg)
-	}
-
-	return &resultTransactions
-}
-
 func SaveTransaction(transactionData *tx_queries.Transaction) {
 	saveTransaction(transactionData, true)
 }
 
-func SaveTransactions(transactionsDatas *[]*tx_queries.Transaction) {
-	saveTransactions(transactionsDatas, true)
-}
-
-func GetLastTransaction(branchKey *common.BranchKey) (*tx_queries.TransactionData, error) {
-	branchTransactions := GetBranch(branchKey)
+func GetLastTransaction(from *common.Address, to *common.Address) (*tx_queries.TransactionData, error) {
+	branchTransactions := GetBranch(from, to)
 
 	if branchTransactions == nil {
 		return &tx_queries.TransactionData{}, nil
@@ -64,8 +49,8 @@ func GetLastTransaction(branchKey *common.BranchKey) (*tx_queries.TransactionDat
 	return &derefedBranchTransactions[len(derefedBranchTransactions)-1], nil
 }
 
-func GetBranch(branchKey *common.BranchKey) *[]tx_queries.TransactionData {
-	return getBranch(branchKey)
+func GetBranch(from *common.Address, to *common.Address) *[]tx_queries.TransactionData {
+	return getBranch(from, to)
 }
 
 func GetTransaction(hash *common.Hash) *tx_queries.TransactionData {

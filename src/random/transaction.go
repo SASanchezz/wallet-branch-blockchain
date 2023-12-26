@@ -1,6 +1,8 @@
 package random
 
-import "wallet-branch-blockchain/src/transaction"
+import (
+	"wallet-branch-blockchain/src/transaction"
+)
 
 func GetRandomTransaction() *transaction.TransactionArgs {
 	return &transaction.TransactionArgs{

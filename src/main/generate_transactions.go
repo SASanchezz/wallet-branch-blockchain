@@ -12,7 +12,8 @@ func generateTransactions() {
 		bootstrap.CreateGenesisBlock()
 	}
 
-	transactionArgs := random.GetRandomTransactions(10000)
-	newTransactions := transaction.GenerateTransactions(transactionArgs)
-	transaction.SaveTransactions(newTransactions)
+	transactionArgs := random.GetRandomTransactions(25)
+	for _, transactionArg := range *transactionArgs {
+		transaction.SaveTransaction(transaction.GenerateTransaction(transactionArg))
+	}
 }
