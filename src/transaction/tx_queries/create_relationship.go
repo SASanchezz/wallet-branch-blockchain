@@ -11,18 +11,17 @@ import (
 func CreateRelationshipQuery(
 	dbTransaction neo4j.ExplicitTransaction,
 	parent *common.Hash,
-	child *common.Hash,
+	childTransaction *Transaction,
 ) {
 	ctx := context.Background()
 
+	params := map[string]interface{}{
+		"parent": parent.ToString(),
+		"child":  childTransaction.Hash.ToString(),
+	}
 	query := "MATCH (t1:Transaction {hash: $parent}) " +
 		"MATCH (t2:Transaction {hash: $child})" +
 		"CREATE (t1)-[:HAS_CHILD]->(t2)"
-
-	params := map[string]interface{}{
-		"parent": parent.ToString(),
-		"child":  child.ToString(),
-	}
 
 	result, err := dbTransaction.Run(ctx, query, params)
 	if err != nil {
@@ -38,20 +37,20 @@ func CreateRelationshipQuery(
 
 func CreateBranchRelationshipQuery(
 	dbTransaction neo4j.ExplicitTransaction,
-	parent *common.Hash,
-	child *common.Hash,
-	branchKey *common.BranchKey,
+	parentHash *common.Hash,
+	childTransaction *Transaction,
 ) {
 	ctx := context.Background()
 
 	query := "MATCH (t1:Transaction {hash: $parent}) " +
 		"MATCH (t2:Transaction {hash: $child})" +
-		"CREATE (t1)-[:HAS_CHILD {hash: $branchKey}]->(t2)"
+		"CREATE (t1)-[:HAS_CHILD {from: $from, to: $to}]->(t2)"
 
 	params := map[string]interface{}{
-		"parent":    parent.ToString(),
-		"child":     child.ToString(),
-		"branchKey": branchKey.ToString(),
+		"parent": parentHash.ToString(),
+		"child":  childTransaction.Hash.ToString(),
+		"from":   childTransaction.From.ToString(),
+		"to":     childTransaction.To.ToString(),
 	}
 	result, err := dbTransaction.Run(ctx, query, params)
 	if err != nil {

@@ -10,6 +10,12 @@ func StringToMyHash(s string) *Hash {
 	return &result
 }
 
+func StringToMyAddress(s string) *Address {
+	var result Address
+	copy(result[:], s)
+	return &result
+}
+
 func StringToBigInt(s string) *big.Int {
 	var result big.Int
 	result.SetString(s, 10)

@@ -3,14 +3,17 @@ package random
 import (
 	"math/big"
 	"math/rand"
+	"strings"
 	"wallet-branch-blockchain/src/common"
 )
 
 var addresses = []*common.Address{
-	{0x02},
-	{0x03},
-	{0x04},
-	{0x05},
+	common.StringToMyAddress(strings.Repeat("0", 20)),
+	common.StringToMyAddress(strings.Repeat("1", 20)),
+	common.StringToMyAddress(strings.Repeat("2", 20)),
+	common.StringToMyAddress(strings.Repeat("3", 20)),
+	common.StringToMyAddress(strings.Repeat("4", 20)),
+	common.StringToMyAddress(strings.Repeat("5", 20)),
 }
 
 func GetRandomAddress() *common.Address {

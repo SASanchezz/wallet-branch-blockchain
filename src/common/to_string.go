@@ -4,8 +4,7 @@ func (hash *Hash) ToString() string {
 	if hash == nil {
 		return ""
 	}
-	returnVal := string(hash[:])
-	return returnVal
+	return string(hash[:])
 }
 
 func (branchKey *BranchKey) ToString() string {
@@ -13,4 +12,11 @@ func (branchKey *BranchKey) ToString() string {
 		return ""
 	}
 	return string(branchKey[:])
+}
+
+func (address *Address) ToString() string {
+	if address == nil {
+		return ""
+	}
+	return string(address[:])
 }

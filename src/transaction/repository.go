@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/common"
-	"wallet-branch-blockchain/src/core"
 	"wallet-branch-blockchain/src/database"
 	"wallet-branch-blockchain/src/transaction/tx_queries"
 
@@ -27,13 +26,9 @@ func saveTransaction(transactionData *tx_queries.Transaction, withRelationship b
 	}
 	tx_queries.SaveTransactionQuery(dbTransaction, transactionData)
 	if withRelationship && *transactionData.ParentHash != *src.GenesisTxHash {
-		tx_queries.CreateRelationshipQuery(dbTransaction, transactionData.ParentHash, transactionData.Hash)
+		tx_queries.CreateRelationshipQuery(dbTransaction, transactionData.ParentHash, transactionData)
 	} else if withRelationship {
-		tx_queries.CreateBranchRelationshipQuery(
-			dbTransaction,
-			src.GenesisTxHash,
-			transactionData.Hash,
-			core.GetBranchKey(transactionData.From, transactionData.To))
+		tx_queries.CreateBranchRelationshipQuery(dbTransaction, src.GenesisTxHash, transactionData)
 	}
 
 	err = dbTransaction.Commit(ctx)
@@ -57,13 +52,13 @@ func saveTransactions(transactionsData *[]*tx_queries.Transaction, withRelations
 	for _, transactionData := range *transactionsData {
 		tx_queries.SaveTransactionQuery(dbTransaction, transactionData)
 		if withRelationship && *transactionData.ParentHash != *src.GenesisTxHash {
-			tx_queries.CreateRelationshipQuery(dbTransaction, transactionData.ParentHash, transactionData.Hash)
+			tx_queries.CreateRelationshipQuery(dbTransaction, transactionData.ParentHash, transactionData)
 		} else if withRelationship {
 			tx_queries.CreateBranchRelationshipQuery(
 				dbTransaction,
 				src.GenesisTxHash,
-				transactionData.Hash,
-				core.GetBranchKey(transactionData.From, transactionData.To))
+				transactionData,
+			)
 		}
 	}
 
@@ -73,14 +68,14 @@ func saveTransactions(transactionsData *[]*tx_queries.Transaction, withRelations
 	}
 }
 
-func getBranch(branchKey *common.BranchKey) *[]tx_queries.TransactionData {
+func getBranch(from *common.Address, to *common.Address) *[]tx_queries.TransactionData {
 	ctx := context.Background()
 	driver := database.Connect()
 	session := driver.NewSession(ctx, neo4j.SessionConfig{})
 	defer session.Close(ctx)
 
 	result, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return *tx_queries.GetBranch(tx, branchKey), nil
+		return *tx_queries.GetBranch(tx, from, to), nil
 	})
 	if err != nil {
 		panic(err)
