@@ -38,7 +38,7 @@ func (ts *TransactionService) GetLastTransaction(from *common.Address, to *commo
 	return ts.Repository.GetLastBranchTransaction(from, to)
 }
 
-func (ts *TransactionService) GetBranch(from *common.Address, to *common.Address) *[]tx_queries.NodeData {
+func (ts *TransactionService) GetBranch(from *common.Address, to *common.Address) *tx_queries.Branch {
 	return ts.Repository.GetBranch(from, to)
 }
 

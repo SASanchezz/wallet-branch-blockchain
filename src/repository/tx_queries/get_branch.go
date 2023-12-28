@@ -8,9 +8,9 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func GetBranch(dbTx neo4j.ManagedTransaction, from *common.Address, to *common.Address) *[]*neo4j.Record {
+func GetBranch(dbTx neo4j.ManagedTransaction, from *common.Address, to *common.Address) *neo4j.Record {
 	ctx := context.Background()
-	var records []*neo4j.Record
+	var record *neo4j.Record
 
 	params := map[string]interface{}{
 		"rootHash": src.GenesisTxHash.ToString(),
@@ -26,9 +26,9 @@ func GetBranch(dbTx neo4j.ManagedTransaction, from *common.Address, to *common.A
 
 	if result, err := dbTx.Run(ctx, query, params); err != nil {
 		panic(err)
-	} else if records, err = result.Collect(ctx); err != nil {
+	} else if record, err = result.Single(ctx); err != nil {
 		panic(err)
 	}
 
-	return &records
+	return record
 }
