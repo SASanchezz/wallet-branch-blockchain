@@ -2,12 +2,12 @@ package tx_queries
 
 import (
 	"context"
-	"fmt"
+	"wallet-branch-blockchain/src/common"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func SaveTransactionQuery(dbTransaction neo4j.ExplicitTransaction, transactionData *Transaction) {
+func SaveTransactionQuery(dbTx neo4j.ExplicitTransaction, transactionData *common.Transaction) {
 	ctx := context.Background()
 
 	params := map[string]interface{}{
@@ -31,17 +31,7 @@ func SaveTransactionQuery(dbTransaction neo4j.ExplicitTransaction, transactionDa
 		"nonce: $nonce}) " +
 		"RETURN t"
 
-	result, err := dbTransaction.Run(ctx, query, params)
-	if err != nil {
+	if _, err := dbTx.Run(ctx, query, params); err != nil {
 		panic(err)
 	}
-
-	resultSummary, err := result.Consume(ctx)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Created %v nodes in %+v.\n",
-		resultSummary.Counters().NodesCreated(),
-		resultSummary.ResultAvailableAfter())
 }

@@ -3,56 +3,45 @@ package transaction
 import (
 	"wallet-branch-blockchain/src/common"
 	"wallet-branch-blockchain/src/core"
-	"wallet-branch-blockchain/src/transaction/tx_queries"
+	"wallet-branch-blockchain/src/repository"
+	"wallet-branch-blockchain/src/repository/tx_queries"
 )
 
-func GenerateTransaction(transactionArgs *TransactionArgs) *tx_queries.Transaction {
-	lastTransaction, err := GetLastTransaction(transactionArgs.From, transactionArgs.To)
-	if err != nil {
-		panic(err)
-	}
+type TransactionService struct {
+	Repository *repository.Repository
+}
 
-	if lastTransaction.Hash == nil {
-		panic(err)
+func New() *TransactionService {
+	return &TransactionService{
+		Repository: repository.New(),
 	}
+}
 
-	transaction := tx_queries.Transaction{
-		Hash:                 &common.Hash{},
-		ParentHash:           lastTransaction.Hash,
-		From:                 transactionArgs.From,
-		To:                   transactionArgs.To,
-		Gas:                  transactionArgs.Gas,
-		GasPrice:             transactionArgs.GasPrice,
-		MaxFeePerGas:         transactionArgs.MaxFeePerGas,
-		MaxPriorityFeePerGas: transactionArgs.MaxPriorityFeePerGas,
-		Value:                transactionArgs.Value,
-		Nonce:                transactionArgs.Nonce,
-	}
+func (ts *TransactionService) Close() {
+	ts.Repository.Close()
+}
+
+func (ts *TransactionService) GenerateTransaction(transaction *common.Transaction) *common.Transaction {
+	lastTransaction := ts.Repository.GetLastBranchTransaction(transaction.From, transaction.To)
 
 	transaction.Hash = core.GetHash(&transaction)
+	transaction.ParentHash = lastTransaction.Hash
 
-	return &transaction
+	return transaction
 }
 
-func SaveTransaction(transactionData *tx_queries.Transaction) {
-	saveTransaction(transactionData, true)
+func (ts *TransactionService) SaveTransaction(transactionData *common.Transaction) {
+	ts.Repository.SaveTransaction(transactionData, true)
 }
 
-func GetLastTransaction(from *common.Address, to *common.Address) (*tx_queries.TransactionData, error) {
-	branchTransactions := GetBranch(from, to)
-
-	if branchTransactions == nil {
-		return &tx_queries.TransactionData{}, nil
-	}
-	derefedBranchTransactions := *branchTransactions
-
-	return &derefedBranchTransactions[len(derefedBranchTransactions)-1], nil
+func (ts *TransactionService) GetLastTransaction(from *common.Address, to *common.Address) *tx_queries.NodeData {
+	return ts.Repository.GetLastBranchTransaction(from, to)
 }
 
-func GetBranch(from *common.Address, to *common.Address) *[]tx_queries.TransactionData {
-	return getBranch(from, to)
+func (ts *TransactionService) GetBranch(from *common.Address, to *common.Address) *[]tx_queries.NodeData {
+	return ts.Repository.GetBranch(from, to)
 }
 
-func GetTransaction(hash *common.Hash) *tx_queries.TransactionData {
-	return getTransaction(hash)
+func (ts *TransactionService) GetTransaction(hash *common.Hash) *tx_queries.NodeData {
+	return ts.Repository.GetTransaction(hash)
 }
