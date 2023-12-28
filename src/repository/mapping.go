@@ -1,11 +1,11 @@
-package transaction
+package repository
 
 import (
 	"wallet-branch-blockchain/src/common"
-	"wallet-branch-blockchain/src/transaction/tx_queries"
+	"wallet-branch-blockchain/src/repository/tx_queries"
 )
 
-func mapTransaction(properties map[string]any) tx_queries.TransactionData {
+func mapTransaction(properties map[string]any) tx_queries.NodeData {
 	hash := properties["hash"].(string)
 	gas := uint64(properties["gas"].(int64))
 	gasPrice := properties["gasPrice"].(string)
@@ -14,7 +14,7 @@ func mapTransaction(properties map[string]any) tx_queries.TransactionData {
 	value := properties["value"].(string)
 	nonce := uint64(properties["nonce"].(int64))
 
-	return tx_queries.TransactionData{
+	return tx_queries.NodeData{
 		Hash:                 common.StringToMyHash(hash),
 		Gas:                  &gas,
 		GasPrice:             common.StringToBigInt(gasPrice),

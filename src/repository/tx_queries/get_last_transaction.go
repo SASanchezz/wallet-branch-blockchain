@@ -2,15 +2,16 @@ package tx_queries
 
 import (
 	"context"
-	"fmt"
 	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/common"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func GetBranch(dbTransaction neo4j.ManagedTransaction, from *common.Address, to *common.Address) *[]*neo4j.Record {
+func GetLastTransaction(dbTx neo4j.ManagedTransaction, from *common.Address, to *common.Address) *neo4j.Record {
 	ctx := context.Background()
+	var record *neo4j.Record
+
 	params := map[string]interface{}{
 		"rootHash": src.GenesisTxHash.ToString(),
 		"from":     from.ToString(),
@@ -20,18 +21,14 @@ func GetBranch(dbTransaction neo4j.ManagedTransaction, from *common.Address, to 
 		"OPTIONAL MATCH (r)-[:HAS_CHILD {from: toString($from), to: toString($to)}]->(t1:Transaction) " +
 		"OPTIONAL MATCH (t1)-[:HAS_CHILD*]->(t2:Transaction) " +
 		"WITH COLLECT(DISTINCT r) + COLLECT(DISTINCT t1) + COLLECT(DISTINCT t2) AS allNodes " +
-		"RETURN allNodes"
+		"WITH last(allNodes) AS lastNode " +
+		"RETURN lastNode"
 
-	result, err := dbTransaction.Run(ctx, query, params)
-	if err != nil {
+	if result, err := dbTx.Run(ctx, query, params); err != nil {
+		panic(err)
+	} else if record, err = result.Single(ctx); err != nil {
 		panic(err)
 	}
 
-	records, err := result.Collect(ctx)
-
-	fmt.Println("rootHash: " + src.GenesisTxHash.ToString())
-	fmt.Println("from: " + from.ToString())
-	fmt.Println("to: " + to.ToString())
-
-	return &records
+	return record
 }

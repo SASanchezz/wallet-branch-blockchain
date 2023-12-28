@@ -8,12 +8,14 @@ import (
 )
 
 func generateTransactions() {
-	if transaction.GetTransaction(src.GenesisTxHash) == nil {
+	ts := transaction.New()
+
+	if ts.GetTransaction(src.GenesisTxHash) == nil {
 		bootstrap.CreateGenesisBlock()
 	}
 
 	transactionArgs := random.GetRandomTransactions(25)
 	for _, transactionArg := range *transactionArgs {
-		transaction.SaveTransaction(transaction.GenerateTransaction(transactionArg))
+		ts.SaveTransaction(ts.GenerateTransaction(transactionArg))
 	}
 }

@@ -1,11 +1,11 @@
 package random
 
 import (
-	"wallet-branch-blockchain/src/transaction"
+	"wallet-branch-blockchain/src/common"
 )
 
-func GetRandomTransaction() *transaction.TransactionArgs {
-	return &transaction.TransactionArgs{
+func GetRandomTransaction() *common.Transaction {
+	return &common.Transaction{
 		From:                 GetRandomAddress(),
 		To:                   GetRandomAddress(),
 		Gas:                  GetRandomUint64(),
@@ -17,8 +17,8 @@ func GetRandomTransaction() *transaction.TransactionArgs {
 	}
 }
 
-func GetRandomTransactions(amount int) *[]*transaction.TransactionArgs {
-	transactions := make([]*transaction.TransactionArgs, amount)
+func GetRandomTransactions(amount int) *[]*common.Transaction {
+	transactions := make([]*common.Transaction, amount)
 
 	for i := 0; i < amount; i++ {
 		transactions[i] = GetRandomTransaction()

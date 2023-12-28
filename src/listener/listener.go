@@ -13,6 +13,9 @@ import (
 )
 
 func Listen() {
+	ts := transaction.New()
+	defer ts.Close()
+
 	url, _ := os.LookupEnv("BLOCKCHAIN_URL")
 
 	client, err := ethclient.Dial(url)
@@ -32,13 +35,13 @@ func Listen() {
 		}
 
 		for _, tx := range block.Transactions() {
-			processTransaction(tx)
+			processTransaction(ts, tx)
 		}
 		fmt.Println("Processed Block Number: ", block.Number().Uint64())
 	}
 }
 
-func processTransaction(tx *types.Transaction) {
+func processTransaction(ts *transaction.TransactionService, tx *types.Transaction) {
 	if tx.To() == nil {
 		return
 	}
@@ -46,7 +49,7 @@ func processTransaction(tx *types.Transaction) {
 	from := common.GetFromAddress(tx)
 	gas, nonce := tx.Gas(), tx.Nonce()
 
-	transactionArg := &transaction.TransactionArgs{
+	transactionArg := &common.Transaction{
 		From:                 from,
 		To:                   common.BytesToAddress([]byte(tx.To().Hex())),
 		Gas:                  &gas,
@@ -58,5 +61,5 @@ func processTransaction(tx *types.Transaction) {
 	}
 
 	fmt.Printf("Got a transaction! From: %s, To: %s\n", from, tx.To())
-	transaction.SaveTransaction(transaction.GenerateTransaction(transactionArg))
+	ts.SaveTransaction(ts.GenerateTransaction(transactionArg))
 }

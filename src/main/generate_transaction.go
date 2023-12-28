@@ -9,13 +9,16 @@ import (
 )
 
 func generateTransaction() {
-	if transaction.GetTransaction(src.GenesisTxHash) == nil {
+	ts := transaction.New()
+	defer ts.Close()
+
+	if ts.GetTransaction(src.GenesisTxHash) == nil {
 		bootstrap.CreateGenesisBlock()
 	}
 
 	gas := uint64(1)
 	nonce := uint64(7)
-	transactionArgs := transaction.TransactionArgs{
+	transactionArgs := common.Transaction{
 		From:                 &common.Address{0x02},
 		To:                   &common.Address{0x03},
 		Gas:                  &gas,
@@ -25,6 +28,6 @@ func generateTransaction() {
 		Value:                big.NewInt(6),
 		Nonce:                &nonce,
 	}
-	newTransaction := transaction.GenerateTransaction(&transactionArgs)
-	transaction.SaveTransaction(newTransaction)
+	newTransaction := ts.GenerateTransaction(&transactionArgs)
+	ts.SaveTransaction(newTransaction)
 }
