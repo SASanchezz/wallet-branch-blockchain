@@ -14,3 +14,7 @@ type NodeData struct {
 	Value                *big.Int     `json:"value"`
 	Nonce                *uint64      `json:"nonce"`
 }
+
+type Branch []*NodeData
+
+type Branches []*Branch
