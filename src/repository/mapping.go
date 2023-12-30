@@ -26,7 +26,7 @@ func mapTransaction(properties map[string]any) *tx_queries.NodeData {
 	nonce := uint64(properties["nonce"].(int64))
 
 	return &tx_queries.NodeData{
-		Hash:                 common.StringToMyHash(hash),
+		Hash:                 &hash,
 		Gas:                  &gas,
 		GasPrice:             common.StringToBigInt(gasPrice),
 		MaxFeePerGas:         common.StringToBigInt(maxFeePerGas),
@@ -34,4 +34,8 @@ func mapTransaction(properties map[string]any) *tx_queries.NodeData {
 		Value:                common.StringToBigInt(value),
 		Nonce:                &nonce,
 	}
+}
+
+func mapAddress(properties map[string]any, fieldName string) *common.Address {
+	return common.StringToAddress(properties[fieldName].(string))
 }

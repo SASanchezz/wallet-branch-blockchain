@@ -12,7 +12,7 @@ func StringToMyHash(s string) *Hash {
 	return &result
 }
 
-func StringToMyAddress(s string) *Address {
+func StringToAddress(s string) *Address {
 	var result Address
 	copy(result[:], s)
 	return &result

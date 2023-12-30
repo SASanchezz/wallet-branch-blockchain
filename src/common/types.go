@@ -15,6 +15,8 @@ type BranchKey [BranchKeyLength]byte
 type Address [AddressLength]byte
 type Hash [HashLength]byte
 
+type Addresses []*Address
+
 type Transaction struct {
 	Hash                 *Hash    `json:"hash"`
 	ParentHash           *Hash    `json:"parentHash"`
