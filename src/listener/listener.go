@@ -49,7 +49,7 @@ func processTransaction(ts *transaction.TransactionService, tx *types.Transactio
 	from := common.GetFromAddress(tx)
 	gas, nonce := tx.Gas(), tx.Nonce()
 
-	transactionArg := &common.Transaction{
+	transactionArgs := &common.Transaction{
 		From:                 from,
 		To:                   common.BytesToAddress([]byte(tx.To().Hex())),
 		Gas:                  &gas,
@@ -61,5 +61,5 @@ func processTransaction(ts *transaction.TransactionService, tx *types.Transactio
 	}
 
 	fmt.Printf("Got a transaction! From: %s, To: %s\n", from, tx.To())
-	ts.SaveTransaction(ts.GenerateTransaction(transactionArg))
+	ts.SaveTransaction(ts.GenerateTransaction(transactionArgs))
 }

@@ -20,3 +20,14 @@ func (address *Address) ToString() string {
 	}
 	return string(address[:])
 }
+
+func (addresses *Addresses) ToString() []string {
+	if addresses == nil {
+		return nil
+	}
+	var result []string
+	for _, address := range *addresses {
+		result = append(result, address.ToString())
+	}
+	return result
+}

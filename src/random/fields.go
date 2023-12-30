@@ -8,12 +8,12 @@ import (
 )
 
 var addresses = []*common.Address{
-	common.StringToMyAddress(strings.Repeat("0", 20)),
-	common.StringToMyAddress(strings.Repeat("1", 20)),
-	common.StringToMyAddress(strings.Repeat("2", 20)),
-	common.StringToMyAddress(strings.Repeat("3", 20)),
-	common.StringToMyAddress(strings.Repeat("4", 20)),
-	common.StringToMyAddress(strings.Repeat("5", 20)),
+	common.StringToAddress(strings.Repeat("0", 20)),
+	common.StringToAddress(strings.Repeat("1", 20)),
+	common.StringToAddress(strings.Repeat("2", 20)),
+	common.StringToAddress(strings.Repeat("3", 20)),
+	common.StringToAddress(strings.Repeat("4", 20)),
+	common.StringToAddress(strings.Repeat("5", 20)),
 }
 
 func GetRandomAddress() *common.Address {

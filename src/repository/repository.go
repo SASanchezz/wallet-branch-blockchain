@@ -56,11 +56,45 @@ func (r *Repository) GetBranch(from *common.Address, to *common.Address) *tx_que
 	if err != nil {
 		panic(err)
 	}
-	records := result.(*neo4j.Record)
+	records := result.(neo4j.Record)
 	allNodes, _ := records.Get("allNodes")
 	data := allNodes.([]interface{})
 
 	return mapTransactions(data)
+}
+
+func (r *Repository) GetToAddresses(from *common.Address) *common.Addresses {
+	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
+		return *tx_queries.GetToAddresses(tx, from), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	records := result.([]*neo4j.Record)
+	addresses := make(common.Addresses, len(records))
+	for i, record := range records {
+		rel, _ := record.Get("rels")
+		addresses[i] = mapAddress(rel.(dbtype.Relationship).Props, "to")
+	}
+
+	return &addresses
+}
+
+func (r *Repository) GetFromAddresses(to *common.Address) *common.Addresses {
+	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
+		return *tx_queries.GetFromAddresses(tx, to), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	records := result.([]*neo4j.Record)
+	addresses := make(common.Addresses, len(records))
+	for i, record := range records {
+		rel, _ := record.Get("rels")
+		addresses[i] = mapAddress(rel.(dbtype.Relationship).Props, "from")
+	}
+
+	return &addresses
 }
 
 func (r *Repository) GetTransaction(hash *common.Hash) *tx_queries.NodeData {

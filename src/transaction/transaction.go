@@ -25,7 +25,7 @@ func (ts *TransactionService) GenerateTransaction(transaction *common.Transactio
 	lastTransaction := ts.Repository.GetLastBranchTransaction(transaction.From, transaction.To)
 
 	transaction.Hash = core.GetHash(&transaction)
-	transaction.ParentHash = lastTransaction.Hash
+	transaction.ParentHash = common.StringToMyHash(*lastTransaction.Hash)
 
 	return transaction
 }
@@ -40,6 +40,14 @@ func (ts *TransactionService) GetLastTransaction(from *common.Address, to *commo
 
 func (ts *TransactionService) GetBranch(from *common.Address, to *common.Address) *tx_queries.Branch {
 	return ts.Repository.GetBranch(from, to)
+}
+
+func (ts *TransactionService) GetToAddresses(from *common.Address) *common.Addresses {
+	return ts.Repository.GetToAddresses(from)
+}
+
+func (ts *TransactionService) GetFromAddresses(to *common.Address) *common.Addresses {
+	return ts.Repository.GetFromAddresses(to)
 }
 
 func (ts *TransactionService) GetTransaction(hash *common.Hash) *tx_queries.NodeData {
