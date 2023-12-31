@@ -27,5 +27,6 @@ type Transaction struct {
 	MaxFeePerGas         *big.Int `json:"maxFeePerGas"`
 	MaxPriorityFeePerGas *big.Int `json:"maxPriorityFeePerGas"`
 	Value                *big.Int `json:"value"`
+	Timestamp            *uint64  `json:"timestamp"`
 	Nonce                *uint64  `json:"nonce"`
 }

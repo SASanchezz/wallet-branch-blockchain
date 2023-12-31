@@ -49,9 +49,9 @@ func (r *Repository) SaveTransaction(transactionData *common.Transaction, withRe
 	}
 }
 
-func (r *Repository) GetBranch(from *common.Address, to *common.Address) *tx_queries.Branch {
+func (r *Repository) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Branch {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return *tx_queries.GetBranch(tx, from, to), nil
+		return *tx_queries.GetBranch(tx, params), nil
 	})
 	if err != nil {
 		panic(err)
@@ -60,7 +60,7 @@ func (r *Repository) GetBranch(from *common.Address, to *common.Address) *tx_que
 	allNodes, _ := records.Get("allNodes")
 	data := allNodes.([]interface{})
 
-	return mapTransactions(data)
+	return mapTransactions(data, params.Limit)
 }
 
 func (r *Repository) GetToAddresses(from *common.Address) *common.Addresses {

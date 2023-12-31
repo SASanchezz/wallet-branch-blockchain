@@ -18,6 +18,7 @@ func SaveTransactionQuery(dbTx neo4j.ExplicitTransaction, transactionData *commo
 		"maxFeePerGas":         transactionData.MaxFeePerGas.String(),
 		"maxPriorityFeePerGas": transactionData.MaxPriorityFeePerGas.String(),
 		"value":                transactionData.Value.String(),
+		"timestamp":            int64(*transactionData.Timestamp),
 		"nonce":                int64(*transactionData.Nonce),
 	}
 	query := "MERGE (t:Transaction { " +
@@ -28,6 +29,7 @@ func SaveTransactionQuery(dbTx neo4j.ExplicitTransaction, transactionData *commo
 		"maxFeePerGas: $maxFeePerGas, " +
 		"maxPriorityFeePerGas: $maxPriorityFeePerGas, " +
 		"value: $value, " +
+		"timestamp: $timestamp, " +
 		"nonce: $nonce}) " +
 		"RETURN t"
 

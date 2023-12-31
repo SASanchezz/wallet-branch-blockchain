@@ -12,6 +12,7 @@ import (
 func (ts *TransactionService) CreateGenesisBlock() {
 	gas := uint64(1)
 	nonce := uint64(7)
+	timestamp := uint64(0)
 	genesisTx := common.Transaction{
 		Hash:                 src.GenesisTxHash,
 		ParentHash:           nil,
@@ -22,6 +23,7 @@ func (ts *TransactionService) CreateGenesisBlock() {
 		MaxFeePerGas:         big.NewInt(0),
 		MaxPriorityFeePerGas: big.NewInt(0),
 		Value:                big.NewInt(0),
+		Timestamp:            &timestamp,
 		Nonce:                &nonce,
 	}
 

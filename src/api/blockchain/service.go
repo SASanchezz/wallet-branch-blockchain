@@ -27,7 +27,7 @@ func (s *Service) GetByHash(hash string) *tx_queries.NodeData {
 	return transaction.New().GetTransaction(common.StringToMyHash(hash))
 }
 
-func (s *Service) GetBranch(from string, to string) *tx_queries.Branch {
-	branch := transaction.New().GetBranch(common.StringToAddress(from), common.StringToAddress(to))
+func (s *Service) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Branch {
+	branch := transaction.New().GetBranch(params)
 	return branch
 }

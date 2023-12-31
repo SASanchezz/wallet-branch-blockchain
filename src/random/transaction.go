@@ -13,6 +13,7 @@ func GetRandomTransaction() *common.Transaction {
 		MaxFeePerGas:         GetRandomBigInt(),
 		MaxPriorityFeePerGas: GetRandomBigInt(),
 		Value:                GetRandomBigInt(),
+		Timestamp:            GetRandomUint64(),
 		Nonce:                GetRandomUint64(),
 	}
 }
