@@ -35,13 +35,14 @@ func Listen() {
 		}
 
 		for _, tx := range block.Transactions() {
-			processTransaction(ts, tx)
+			tx.Value()
+			processTransaction(ts, tx, block.Time())
 		}
 		fmt.Println("Processed Block Number: ", block.Number().Uint64())
 	}
 }
 
-func processTransaction(ts *transaction.TransactionService, tx *types.Transaction) {
+func processTransaction(ts *transaction.TransactionService, tx *types.Transaction, timestamp uint64) {
 	if tx.To() == nil {
 		return
 	}
@@ -57,6 +58,7 @@ func processTransaction(ts *transaction.TransactionService, tx *types.Transactio
 		MaxFeePerGas:         tx.GasFeeCap(),
 		MaxPriorityFeePerGas: tx.GasTipCap(),
 		Value:                tx.Value(),
+		Timestamp:            &timestamp,
 		Nonce:                &nonce,
 	}
 

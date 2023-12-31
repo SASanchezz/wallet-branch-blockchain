@@ -3,8 +3,10 @@ package payloads
 import "wallet-branch-blockchain/src/common"
 
 type GetBranch struct {
-	From string `form:"from" binding:"required"`
-	To   string `form:"to" binding:"required"`
+	From   string `form:"from" binding:"required"`
+	To     string `form:"to" binding:"required"`
+	Before string `form:"before"`
+	After  string `form:"after"`
 }
 
 func (payload GetBranch) Validate() (bool, string) {

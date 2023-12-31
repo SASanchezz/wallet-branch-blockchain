@@ -3,6 +3,7 @@ package main
 import (
 	"wallet-branch-blockchain/src/api"
 	"wallet-branch-blockchain/src/bootstrap"
+	"wallet-branch-blockchain/src/listener"
 )
 
 func main() {
@@ -12,5 +13,5 @@ func main() {
 
 	api.Run()
 
-	// listener.Listen()
+	listener.Listen()
 }

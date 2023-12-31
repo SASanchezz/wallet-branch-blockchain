@@ -2,8 +2,11 @@ package blockchain
 
 import (
 	"net/http"
+	"strconv"
 	"wallet-branch-blockchain/src/api/blockchain/payloads"
 	"wallet-branch-blockchain/src/api/utilities"
+	"wallet-branch-blockchain/src/common"
+	"wallet-branch-blockchain/src/repository/tx_queries"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,7 +50,27 @@ func (cont *Controller) GetBranch(c *gin.Context) {
 	var input payloads.GetBranch
 	utilities.ParseInput(&input, c)
 	utilities.ValidateInput(input, c)
+	limitStr := c.DefaultQuery("limit", "100")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "limit must be an integer"})
+		return
+	} else if limit < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "limit must be greater than 0"})
+		return
+	} else if limit > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "limit must be less than 100"})
+		return
+	}
 
-	addresses := cont.Service.GetBranch(input.From, input.To)
+	getBranchParams := tx_queries.GetBranchParams{
+		From:   common.StringToAddress(input.From),
+		To:     common.StringToAddress(input.To),
+		Limit:  int64(limit),
+		Before: input.Before,
+		After:  input.After,
+	}
+
+	addresses := cont.Service.GetBranch(&getBranchParams)
 	c.JSON(http.StatusOK, addresses)
 }
