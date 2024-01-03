@@ -7,6 +7,18 @@ import (
 	"wallet-branch-blockchain/src/common"
 )
 
+var timestamps = []uint64{
+	1,
+	2,
+	3,
+	4,
+	5,
+}
+
+func GetRandomTimestamp() *uint64 {
+	return &timestamps[rand.Intn(len(timestamps))]
+}
+
 var addresses = []*common.Address{
 	common.StringToAddress(strings.Repeat("0", 20)),
 	common.StringToAddress(strings.Repeat("1", 20)),

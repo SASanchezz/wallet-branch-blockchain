@@ -7,14 +7,10 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j/dbtype"
 )
 
-func mapTransactions(properties []interface{}, limit int64) *tx_queries.Branch {
-	transactions := make(tx_queries.Branch, limit)
+func mapTransactions(properties []interface{}) *tx_queries.Branch {
+	transactions := make(tx_queries.Branch, len(properties))
 
 	for i, node := range properties {
-		if int64(i) == limit {
-			break
-		}
-
 		transactions[i] = mapTransaction(node.(dbtype.Node).Props)
 	}
 	return &transactions

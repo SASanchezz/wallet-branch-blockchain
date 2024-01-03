@@ -1,8 +1,9 @@
 package blockchain
 
 import (
+	"fmt"
 	"net/http"
-	"strconv"
+	"time"
 	"wallet-branch-blockchain/src/api/blockchain/payloads"
 	"wallet-branch-blockchain/src/api/utilities"
 	"wallet-branch-blockchain/src/common"
@@ -21,56 +22,72 @@ func NewController(blService *Service) *Controller {
 
 func (cont *Controller) GetToAddresses(c *gin.Context) {
 	var input payloads.GetToAddresses
-	utilities.ParseInput(&input, c)
-	utilities.ValidateInput(input, c)
+	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
+		return
+	}
+
+	start := time.Now()
 
 	addresses := cont.Service.GetToAddresses(input.From)
+
+	elapsed := time.Since(start)
+	fmt.Printf("Request took %s\n", elapsed)
+
 	c.JSON(http.StatusOK, addresses)
 }
 
 func (cont *Controller) GetFromAddresses(c *gin.Context) {
 	var input payloads.GetFromAddresses
-	utilities.ParseInput(&input, c)
-	utilities.ValidateInput(input, c)
+	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
+		return
+	}
+
+	start := time.Now()
 
 	addresses := cont.Service.GetFromAddresses(input.To)
+
+	elapsed := time.Since(start)
+	fmt.Printf("Request took %s\n", elapsed)
+
 	c.JSON(http.StatusOK, addresses)
 }
 
 func (cont *Controller) GetByHash(c *gin.Context) {
 	var input payloads.GetByHash
-	utilities.ParseInput(&input, c)
-	utilities.ValidateInput(input, c)
+	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
+		return
+	}
 
-	addresses := cont.Service.GetByHash(input.Hash)
-	c.JSON(http.StatusOK, addresses)
+	start := time.Now()
+
+	transaction := cont.Service.GetByHash(input.Hash)
+
+	elapsed := time.Since(start)
+	fmt.Printf("Request took %s\n", elapsed)
+
+	c.JSON(http.StatusOK, transaction)
 }
 
 func (cont *Controller) GetBranch(c *gin.Context) {
 	var input payloads.GetBranch
-	utilities.ParseInput(&input, c)
-	utilities.ValidateInput(input, c)
-	limitStr := c.DefaultQuery("limit", "100")
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "limit must be an integer"})
-		return
-	} else if limit < 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "limit must be greater than 0"})
-		return
-	} else if limit > 100 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "limit must be less than 100"})
+	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
 		return
 	}
 
 	getBranchParams := tx_queries.GetBranchParams{
 		From:   common.StringToAddress(input.From),
 		To:     common.StringToAddress(input.To),
-		Limit:  int64(limit),
-		Before: input.Before,
-		After:  input.After,
+		Limit:  &input.Limit,
+		Before: &input.Before,
+		After:  &input.After,
 	}
 
-	addresses := cont.Service.GetBranch(&getBranchParams)
-	c.JSON(http.StatusOK, addresses)
+	start := time.Now()
+
+	branch := cont.Service.GetBranch(&getBranchParams)
+
+	elapsed := time.Since(start)
+	fmt.Printf("Request took %s\n", elapsed)
+
+	c.JSON(http.StatusOK, branch)
 }

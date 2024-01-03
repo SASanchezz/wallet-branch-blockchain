@@ -56,11 +56,11 @@ func (r *Repository) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.B
 	if err != nil {
 		panic(err)
 	}
-	records := result.(neo4j.Record)
-	allNodes, _ := records.Get("allNodes")
-	data := allNodes.([]interface{})
+	records := result.([]*neo4j.Record)
 
-	return mapTransactions(data, params.Limit)
+	parsedTransactions := *parseTransactions(records, "allNodes", int8(*params.Limit))
+
+	return &parsedTransactions
 }
 
 func (r *Repository) GetToAddresses(from *common.Address) *common.Addresses {

@@ -8,9 +8,9 @@ import (
 type GetBranchParams struct {
 	From   *common.Address
 	To     *common.Address
-	Limit  int64
-	Before string
-	After  string
+	Limit  *int64
+	Before *int64
+	After  *int64
 }
 
 type NodeData struct {
