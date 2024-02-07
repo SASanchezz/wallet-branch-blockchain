@@ -2,7 +2,9 @@ package tx_queries
 
 import (
 	"context"
+	"time"
 	"wallet-branch-blockchain/src"
+	"wallet-branch-blockchain/src/logger"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -10,10 +12,10 @@ import (
 func GetBranch(dbTx neo4j.ManagedTransaction, inputParams *GetBranchParams) *[]*neo4j.Record {
 	ctx := context.Background()
 	var records []*neo4j.Record
-	if inputParams.After == nil {
+	if *inputParams.After == 0 {
 		*inputParams.After = 0
 	}
-	if inputParams.Before == nil {
+	if *inputParams.Before == 0 {
 		*inputParams.Before = 9223372036854775807 // max int64
 	}
 
@@ -34,11 +36,20 @@ func GetBranch(dbTx neo4j.ManagedTransaction, inputParams *GetBranchParams) *[]*
 		"WITH COLLECT(DISTINCT t2) + COLLECT(DISTINCT t1) + COLLECT(DISTINCT r) AS allNodes " +
 		"RETURN allNodes[0..$limit] as allNodes"
 
+	start := time.Now()
+
 	if result, err := dbTx.Run(ctx, query, params); err != nil {
 		panic(err)
 	} else if records, err = result.Collect(ctx); err != nil {
 		panic(err)
 	}
+
+	elapsed := time.Since(start)
+	logger := logger.Logger{
+		Path: "../logs/get_branch.txt",
+	}
+
+	logger.Log(elapsed.String())
 
 	return &records
 }

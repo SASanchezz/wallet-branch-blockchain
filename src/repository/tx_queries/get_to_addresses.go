@@ -2,8 +2,10 @@ package tx_queries
 
 import (
 	"context"
+	"time"
 	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/common"
+	"wallet-branch-blockchain/src/logger"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -21,11 +23,20 @@ func GetToAddresses(dbTx neo4j.ManagedTransaction, from *common.Address) *[]*neo
 		"[rels:HAS_CHILD {from: toString($from)}]->(:Transaction) " +
 		"RETURN rels"
 
+	start := time.Now()
+
 	if result, err := dbTx.Run(ctx, query, params); err != nil {
 		panic(err)
 	} else if records, err = result.Collect(ctx); err != nil {
 		panic(err)
 	}
+
+	elapsed := time.Since(start)
+	logger := logger.Logger{
+		Path: "../logs/get_to_addresses.txt",
+	}
+
+	logger.Log(elapsed.String())
 
 	return &records
 }

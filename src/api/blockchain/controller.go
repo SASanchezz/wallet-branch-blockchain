@@ -58,12 +58,7 @@ func (cont *Controller) GetByHash(c *gin.Context) {
 		return
 	}
 
-	start := time.Now()
-
 	transaction := cont.Service.GetByHash(input.Hash)
-
-	elapsed := time.Since(start)
-	fmt.Printf("Request took %s\n", elapsed)
 
 	c.JSON(http.StatusOK, transaction)
 }
@@ -82,12 +77,7 @@ func (cont *Controller) GetBranch(c *gin.Context) {
 		After:  &input.After,
 	}
 
-	start := time.Now()
-
 	branch := cont.Service.GetBranch(&getBranchParams)
-
-	elapsed := time.Since(start)
-	fmt.Printf("Request took %s\n", elapsed)
 
 	c.JSON(http.StatusOK, branch)
 }
