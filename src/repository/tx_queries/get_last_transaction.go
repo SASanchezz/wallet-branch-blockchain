@@ -24,9 +24,9 @@ func GetLastTransaction(dbTx neo4j.ManagedTransaction, from *common.Address, to 
 		"WHERE (rel.from = toString($from) AND rel.to = toString($to)) " +
 		"OR (rel.to = toString($from) AND rel.from = toString($to)) " +
 		"OPTIONAL MATCH (t1)-[:HAS_CHILD*]->(t2:Transaction) " +
-		"WITH COLLECT(DISTINCT r) + COLLECT(DISTINCT t1) + COLLECT(DISTINCT t2) AS allNodes " +
-		"WITH last(allNodes) AS lastNode " +
-		"RETURN lastNode"
+		"WITH rel, COLLECT(DISTINCT r) + COLLECT(DISTINCT t1) + COLLECT(DISTINCT t2) AS allNodes " +
+		"WITH rel, last(allNodes) AS lastNode " +
+		"RETURN rel, lastNode"
 
 	start := time.Now()
 
@@ -41,7 +41,7 @@ func GetLastTransaction(dbTx neo4j.ManagedTransaction, from *common.Address, to 
 		Path: "../logs/get_last_transaction.txt",
 	}
 
-	logger.Log(elapsed.String())
+	logger.LogInt64(int64(elapsed / time.Millisecond))
 
 	return record
 }

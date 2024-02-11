@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"wallet-branch-blockchain/src/common"
-	"wallet-branch-blockchain/src/core"
 	"wallet-branch-blockchain/src/repository"
 	"wallet-branch-blockchain/src/repository/tx_queries"
 )
@@ -22,9 +21,11 @@ func (ts *TransactionService) Close() {
 }
 
 func (ts *TransactionService) GenerateTransaction(transaction *common.Transaction) *common.Transaction {
-	lastTransaction := ts.Repository.GetLastBranchTransaction(transaction.From, transaction.To)
+	lastTransaction, rel := ts.GetLastTransaction(transaction.From, transaction.To)
 
-	transaction.Hash = core.GetHash(&transaction)
+	if rel != nil && *rel.From != *transaction.From {
+		transaction.Value.Neg(transaction.Value)
+	}
 	transaction.ParentHash = common.StringToMyHash(*lastTransaction.Hash)
 
 	return transaction
@@ -34,7 +35,7 @@ func (ts *TransactionService) SaveTransaction(transactionData *common.Transactio
 	ts.Repository.SaveTransaction(transactionData, true)
 }
 
-func (ts *TransactionService) GetLastTransaction(from *common.Address, to *common.Address) *tx_queries.NodeData {
+func (ts *TransactionService) GetLastTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
 	return ts.Repository.GetLastBranchTransaction(from, to)
 }
 
@@ -52,4 +53,8 @@ func (ts *TransactionService) GetFromAddresses(to *common.Address) *common.Addre
 
 func (ts *TransactionService) GetTransaction(hash *common.Hash) *tx_queries.NodeData {
 	return ts.Repository.GetTransaction(hash)
+}
+
+func (ts *TransactionService) GetAddresses(params *tx_queries.GetBranchParams) *tx_queries.Branch {
+	return ts.Repository.GetAddresses(params)
 }

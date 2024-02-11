@@ -18,12 +18,6 @@ func StringToAddress(s string) *Address {
 	return &result
 }
 
-func StringToBigInt(s string) *big.Int {
-	var result big.Int
-	result.SetString(s, 10)
-	return &result
-}
-
 func BytesToAddress(b []byte) *Address {
 	var result Address
 	copy(result[:], b)
@@ -31,11 +25,6 @@ func BytesToAddress(b []byte) *Address {
 }
 
 func GetFromAddress(tx *types.Transaction) *Address {
-	// from, err := types.Sender(types.NewEIP155Signer(tx.ChainId()), tx)
-	// if err != nil {
-	// 	from, err = types.Sender(types.HomesteadSigner{}, tx)
-	// }
-
 	from, err := types.Sender(types.LatestSignerForChainID(tx.ChainId()), tx)
 
 	if err != nil {
@@ -43,5 +32,10 @@ func GetFromAddress(tx *types.Transaction) *Address {
 	}
 
 	return BytesToAddress([]byte(from.String()))
+}
 
+func StringToBigInt(s string) *big.Int {
+	var result big.Int
+	result.SetString(s, 10)
+	return &result
 }

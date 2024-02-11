@@ -36,7 +36,7 @@ func GetFromAddresses(dbTx neo4j.ManagedTransaction, to *common.Address) *[]*neo
 		Path: "../logs/get_from_addresses.txt",
 	}
 
-	logger.Log(elapsed.String())
+	logger.LogInt64(int64(elapsed / time.Millisecond))
 
 	return &records
 }

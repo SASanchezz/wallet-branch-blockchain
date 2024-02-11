@@ -38,6 +38,13 @@ func mapTransaction(properties map[string]any) *tx_queries.NodeData {
 	}
 }
 
+func mapRelationship(properties map[string]any) *tx_queries.RelationshipData {
+	return &tx_queries.RelationshipData{
+		From: mapAddress(properties, "from"),
+		To:   mapAddress(properties, "to"),
+	}
+}
+
 func mapAddress(properties map[string]any, fieldName string) *common.Address {
 	return common.StringToAddress(properties[fieldName].(string))
 }

@@ -2,6 +2,7 @@ package tx_queries
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/common"
@@ -36,7 +37,8 @@ func GetToAddresses(dbTx neo4j.ManagedTransaction, from *common.Address) *[]*neo
 		Path: "../logs/get_to_addresses.txt",
 	}
 
-	logger.Log(elapsed.String())
+	fmt.Println("GetTransaction elapsed time: ", elapsed)
+	logger.LogInt64(int64(elapsed / time.Microsecond))
 
 	return &records
 }

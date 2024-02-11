@@ -4,10 +4,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 type Logger struct {
 	Path string
+}
+
+func (l *Logger) LogInt64(message int64) {
+	l.Log(strconv.FormatInt(message, 10))
 }
 
 func (l *Logger) Log(message string) {

@@ -63,5 +63,7 @@ func processTransaction(ts *transaction.TransactionService, tx *types.Transactio
 	}
 
 	fmt.Printf("Got a transaction! From: %s, To: %s\n", from, tx.To())
-	ts.SaveTransaction(ts.GenerateTransaction(transactionArgs))
+	transaction := ts.GenerateTransaction(transactionArgs)
+	transaction.Hash = common.StringToMyHash(tx.Hash().Hex())
+	ts.SaveTransaction(transaction)
 }

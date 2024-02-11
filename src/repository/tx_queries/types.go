@@ -24,6 +24,11 @@ type NodeData struct {
 	Nonce                *uint64  `json:"nonce"`
 }
 
+type RelationshipData struct {
+	From *common.Address `json:"from"`
+	To   *common.Address `json:"to"`
+}
+
 type Branch []*NodeData
 
 type Branches []*Branch

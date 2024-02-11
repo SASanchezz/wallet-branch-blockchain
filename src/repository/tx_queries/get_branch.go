@@ -49,7 +49,7 @@ func GetBranch(dbTx neo4j.ManagedTransaction, inputParams *GetBranchParams) *[]*
 		Path: "../logs/get_branch.txt",
 	}
 
-	logger.Log(elapsed.String())
+	logger.LogInt64(int64(elapsed / time.Millisecond))
 
 	return &records
 }

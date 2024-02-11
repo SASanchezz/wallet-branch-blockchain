@@ -2,36 +2,29 @@ package core
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"sync"
 	"wallet-branch-blockchain/src/common"
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
 	"golang.org/x/crypto/sha3"
 )
-
-//TODO: take function from libs to own package
 
 var hasherPool = sync.Pool{
 	New: func() interface{} { return sha3.NewLegacyKeccak256() },
 }
 
-func rlpHash(x interface{}) *common.Hash {
-	h := &common.Hash{}
-	tmp := [32]byte{}
-	sha := hasherPool.Get().(crypto.KeccakState)
-	defer hasherPool.Put(sha)
-	sha.Reset()
-	rlp.Encode(sha, x)
-	sha.Read(tmp[:])
-
-	hexString := hex.EncodeToString(tmp[:])
-	copy(h[:], hexString)
-	return h
-}
-
 func GetHash(x interface{}) *common.Hash {
-	return rlpHash(x)
+	hash := sha3.New256()
+	var buf []byte
+	b, err := json.Marshal(x)
+	if err != nil {
+		panic(err)
+	}
+
+	hash.Write(b)
+	buf = hash.Sum(nil)
+
+	return common.StringToMyHash(hex.EncodeToString(buf))
 }
 
 func GetBranchKey(from *common.Address, to *common.Address) *common.BranchKey {

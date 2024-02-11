@@ -27,7 +27,7 @@ func GetTransaction(dbTx neo4j.ManagedTransaction, txHash *common.Hash) *neo4j.R
 		Path: "../logs/get_transaction.txt",
 	}
 
-	logger.Log(elapsed.String())
+	logger.LogInt64(int64(elapsed / time.Millisecond))
 
 	record, err := result.Single(ctx)
 

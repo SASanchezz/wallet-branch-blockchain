@@ -118,7 +118,7 @@ func (r *Repository) GetTransaction(hash *common.Hash) *tx_queries.NodeData {
 	return mapTransaction(t.(dbtype.Node).Props)
 }
 
-func (r *Repository) GetLastBranchTransaction(from *common.Address, to *common.Address) *tx_queries.NodeData {
+func (r *Repository) GetLastBranchTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
 		return *tx_queries.GetLastTransaction(tx, from, to), nil
 	})
@@ -127,6 +127,11 @@ func (r *Repository) GetLastBranchTransaction(from *common.Address, to *common.A
 	}
 	record := result.(neo4j.Record)
 	lastNode, _ := record.Get("lastNode")
+	rel, _ := record.Get("rel")
 
-	return mapTransaction(lastNode.(dbtype.Node).Props)
+	if rel == nil {
+		return mapTransaction(lastNode.(dbtype.Node).Props), nil
+	}
+
+	return mapTransaction(lastNode.(dbtype.Node).Props), mapRelationship(rel.(dbtype.Relationship).Props)
 }
