@@ -48,3 +48,17 @@ func mapRelationship(properties map[string]any) *tx_queries.RelationshipData {
 func mapAddress(properties map[string]any, fieldName string) *common.Address {
 	return common.StringToAddress(properties[fieldName].(string))
 }
+
+func mapAddresses(properties []interface{}) []string {
+	addresses := make([]string, len(properties))
+
+	for i, address := range properties {
+		s, ok := address.(string)
+		if !ok {
+			panic("address is not a string")
+		}
+		addresses[i] = s
+	}
+
+	return addresses
+}

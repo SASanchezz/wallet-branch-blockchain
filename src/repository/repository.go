@@ -135,3 +135,16 @@ func (r *Repository) GetLastBranchTransaction(from *common.Address, to *common.A
 
 	return mapTransaction(lastNode.(dbtype.Node).Props), mapRelationship(rel.(dbtype.Relationship).Props)
 }
+
+func (r *Repository) GetAddresses() []string {
+	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
+		return *tx_queries.GetAddresses(tx), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	record := result.(neo4j.Record)
+	uniqueAddresses, _ := record.Get("uniqueAddresses")
+
+	return mapAddresses(uniqueAddresses.([]interface{}))
+}

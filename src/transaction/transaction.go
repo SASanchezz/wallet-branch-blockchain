@@ -55,6 +55,6 @@ func (ts *TransactionService) GetTransaction(hash *common.Hash) *tx_queries.Node
 	return ts.Repository.GetTransaction(hash)
 }
 
-func (ts *TransactionService) GetAddresses(params *tx_queries.GetBranchParams) *tx_queries.Branch {
-	return ts.Repository.GetAddresses(params)
+func (ts *TransactionService) GetAddresses() []string {
+	return ts.Repository.GetAddresses()
 }

@@ -31,3 +31,8 @@ func (s *Service) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Bran
 	branch := transaction.New().GetBranch(params)
 	return branch
 }
+
+func (s *Service) GetAddresses() []string {
+	addresses := transaction.New().GetAddresses()
+	return addresses
+}

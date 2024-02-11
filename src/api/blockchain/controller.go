@@ -64,7 +64,7 @@ func (cont *Controller) GetByHash(c *gin.Context) {
 }
 
 func (cont *Controller) GetBranch(c *gin.Context) {
-	var input payloads.GetBranch
+	var input payloads.GetBranch //TODO: refactoring place
 	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
 		return
 	}
@@ -80,4 +80,10 @@ func (cont *Controller) GetBranch(c *gin.Context) {
 	branch := cont.Service.GetBranch(&getBranchParams)
 
 	c.JSON(http.StatusOK, branch)
+}
+
+func (cont *Controller) GetAddresses(c *gin.Context) {
+	addresses := cont.Service.GetAddresses()
+
+	c.JSON(http.StatusOK, addresses)
 }
