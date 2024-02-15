@@ -28,6 +28,16 @@ func (s *Service) GetByHash(hash string) *tx_queries.NodeData {
 }
 
 func (s *Service) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Branch {
+	if *params.After == 0 {
+		*params.After = 0
+	}
+	if *params.Before == 0 {
+		*params.Before = 9223372036854775807 // max int64
+	}
+	if *params.Limit == 0 {
+		*params.Limit = 100
+	}
+
 	branch := transaction.New().GetBranch(params)
 	return branch
 }

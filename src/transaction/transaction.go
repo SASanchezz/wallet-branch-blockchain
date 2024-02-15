@@ -36,7 +36,7 @@ func (ts *TransactionService) SaveTransaction(transactionData *common.Transactio
 }
 
 func (ts *TransactionService) GetLastTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
-	return ts.Repository.GetLastBranchTransaction(from, to)
+	return ts.Repository.GetLastTransaction(from, to)
 }
 
 func (ts *TransactionService) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Branch {

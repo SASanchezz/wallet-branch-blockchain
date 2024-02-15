@@ -1,35 +1,27 @@
 package tx_queries
 
 import (
-	"context"
-	"time"
 	"wallet-branch-blockchain/src/common"
-	"wallet-branch-blockchain/src/logger"
+	"wallet-branch-blockchain/src/repository/core"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func GetTransaction(dbTx neo4j.ManagedTransaction, txHash *common.Hash) *neo4j.Record {
-	ctx := context.Background()
 	params := map[string]interface{}{
 		"hash": txHash.ToString(),
 	}
-	query := "MATCH (t:Transaction {hash: toString($hash)}) RETURN t"
+	template := "MATCH (t:Transaction {hash: toString($hash)}) RETURN t"
 
-	start := time.Now()
+	query := core.NewQueryBuilder(dbTx).
+		WithParams(params).
+		WithTemplate(template).
+		WithLogPath("../logs/get_transaction.txt").
+		Build()
 
-	result, err := dbTx.Run(ctx, query, params)
-	if err != nil {
-		panic(err)
+	if result := query.Run(); len(result) == 0 {
+		return nil
+	} else {
+		return result[0]
 	}
-	elapsed := time.Since(start)
-	logger := logger.Logger{
-		Path: "../logs/get_transaction.txt",
-	}
-
-	logger.LogInt64(int64(elapsed / time.Millisecond))
-
-	record, err := result.Single(ctx)
-
-	return record
 }

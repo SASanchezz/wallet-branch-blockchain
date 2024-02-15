@@ -40,7 +40,7 @@ func (r *Repository) SaveTransaction(transactionData *common.Transaction, withRe
 		if *transactionData.ParentHash != *src.GenesisTxHash {
 			tx_queries.CreateRelationshipQuery(dbTransaction, transactionData.ParentHash, transactionData)
 		} else {
-			tx_queries.CreateBranchRelationshipQuery(dbTransaction, src.GenesisTxHash, transactionData)
+			tx_queries.CreateBaseRelationshipQuery(dbTransaction, src.GenesisTxHash, transactionData)
 		}
 	}
 
@@ -51,7 +51,7 @@ func (r *Repository) SaveTransaction(transactionData *common.Transaction, withRe
 
 func (r *Repository) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Branch {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return *tx_queries.GetBranch(tx, params), nil
+		return tx_queries.GetBranch(tx, params), nil
 	})
 	if err != nil {
 		panic(err)
@@ -65,7 +65,7 @@ func (r *Repository) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.B
 
 func (r *Repository) GetToAddresses(from *common.Address) *common.Addresses {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return *tx_queries.GetToAddresses(tx, from), nil
+		return tx_queries.GetToAddresses(tx, from), nil
 	})
 	if err != nil {
 		panic(err)
@@ -82,7 +82,7 @@ func (r *Repository) GetToAddresses(from *common.Address) *common.Addresses {
 
 func (r *Repository) GetFromAddresses(to *common.Address) *common.Addresses {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return *tx_queries.GetFromAddresses(tx, to), nil
+		return tx_queries.GetFromAddresses(tx, to), nil
 	})
 	if err != nil {
 		panic(err)
@@ -118,14 +118,15 @@ func (r *Repository) GetTransaction(hash *common.Hash) *tx_queries.NodeData {
 	return mapTransaction(t.(dbtype.Node).Props)
 }
 
-func (r *Repository) GetLastBranchTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
+func (r *Repository) GetLastTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return *tx_queries.GetLastTransaction(tx, from, to), nil
+		return tx_queries.GetLastTransaction(tx, from, to), nil
 	})
 	if err != nil {
 		panic(err)
 	}
-	record := result.(neo4j.Record)
+
+	record := result.(*neo4j.Record)
 	lastNode, _ := record.Get("lastNode")
 	rel, _ := record.Get("rel")
 
@@ -138,12 +139,12 @@ func (r *Repository) GetLastBranchTransaction(from *common.Address, to *common.A
 
 func (r *Repository) GetAddresses() []string {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return *tx_queries.GetAddresses(tx), nil
+		return tx_queries.GetAddresses(tx), nil
 	})
 	if err != nil {
 		panic(err)
 	}
-	record := result.(neo4j.Record)
+	record := result.(*neo4j.Record)
 	uniqueAddresses, _ := record.Get("uniqueAddresses")
 
 	return mapAddresses(uniqueAddresses.([]interface{}))

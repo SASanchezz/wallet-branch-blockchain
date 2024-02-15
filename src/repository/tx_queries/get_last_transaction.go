@@ -1,25 +1,20 @@
 package tx_queries
 
 import (
-	"context"
-	"time"
 	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/common"
-	"wallet-branch-blockchain/src/logger"
+	"wallet-branch-blockchain/src/repository/core"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func GetLastTransaction(dbTx neo4j.ManagedTransaction, from *common.Address, to *common.Address) *neo4j.Record {
-	ctx := context.Background()
-	var record *neo4j.Record
-
 	params := map[string]interface{}{
 		"rootHash": src.GenesisTxHash.ToString(),
 		"from":     from.ToString(),
 		"to":       to.ToString(),
 	}
-	query := "MATCH (r:Transaction {hash: toString($rootHash)}) " +
+	template := "MATCH (r:Transaction {hash: toString($rootHash)}) " +
 		"OPTIONAL MATCH (r)-[rel:HAS_CHILD]->(t1:Transaction) " +
 		"WHERE (rel.from = toString($from) AND rel.to = toString($to)) " +
 		"OR (rel.to = toString($from) AND rel.from = toString($to)) " +
@@ -28,20 +23,15 @@ func GetLastTransaction(dbTx neo4j.ManagedTransaction, from *common.Address, to 
 		"WITH rel, last(allNodes) AS lastNode " +
 		"RETURN rel, lastNode"
 
-	start := time.Now()
+	query := core.NewQueryBuilder(dbTx).
+		WithParams(params).
+		WithTemplate(template).
+		WithLogPath("../logs/get_last_transaction.txt").
+		Build()
 
-	if result, err := dbTx.Run(ctx, query, params); err != nil {
-		panic(err)
-	} else if record, err = result.Single(ctx); err != nil {
-		panic(err)
+	if result := query.Run(); len(result) == 0 {
+		return nil
+	} else {
+		return result[0]
 	}
-
-	elapsed := time.Since(start)
-	logger := logger.Logger{
-		Path: "../logs/get_last_transaction.txt",
-	}
-
-	logger.LogInt64(int64(elapsed / time.Millisecond))
-
-	return record
 }

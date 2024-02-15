@@ -1,15 +1,13 @@
 package tx_queries
 
 import (
-	"context"
 	"wallet-branch-blockchain/src/common"
+	"wallet-branch-blockchain/src/repository/core"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func SaveTransactionQuery(dbTx neo4j.ExplicitTransaction, transactionData *common.Transaction) {
-	ctx := context.Background()
-
 	params := map[string]interface{}{
 		"hash":                 transactionData.Hash.ToString(),
 		"parentHash":           transactionData.ParentHash.ToString(),
@@ -21,7 +19,7 @@ func SaveTransactionQuery(dbTx neo4j.ExplicitTransaction, transactionData *commo
 		"timestamp":            int64(*transactionData.Timestamp),
 		"nonce":                int64(*transactionData.Nonce),
 	}
-	query := "MERGE (t:Transaction { " +
+	template := "MERGE (t:Transaction { " +
 		"hash: $hash, " +
 		"parentHash: $parentHash, " +
 		"gas: $gas, " +
@@ -33,7 +31,11 @@ func SaveTransactionQuery(dbTx neo4j.ExplicitTransaction, transactionData *commo
 		"nonce: $nonce}) " +
 		"RETURN t"
 
-	if _, err := dbTx.Run(ctx, query, params); err != nil {
-		panic(err)
-	}
+	query := core.NewQueryBuilder(dbTx).
+		WithParams(params).
+		WithTemplate(template).
+		WithLogPath("../logs/save_transaction.txt").
+		Build()
+
+	query.Run()
 }
