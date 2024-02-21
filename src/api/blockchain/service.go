@@ -13,14 +13,9 @@ func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) GetToAddresses(from string) []string {
-	addresses := transaction.New().GetToAddresses(common.StringToAddress(from))
-	return addresses.ToString()
-}
-
-func (s *Service) GetFromAddresses(to string) []string {
-	addresses := transaction.New().GetFromAddresses(common.StringToAddress(to))
-	return addresses.ToString()
+func (s *Service) GetInterrelatedAddresses(address string) tx_queries.InterrelatedAddresses {
+	addresses := transaction.New().GetInterrelatedAddresses(common.StringToAddress(address))
+	return addresses
 }
 
 func (s *Service) GetByHash(hash string) *tx_queries.NodeData {

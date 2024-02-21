@@ -20,31 +20,15 @@ func NewController(blService *Service) *Controller {
 	return &Controller{blService}
 }
 
-func (cont *Controller) GetToAddresses(c *gin.Context) {
-	var input payloads.GetToAddresses
+func (cont *Controller) GetInterrelatedAddresses(c *gin.Context) {
+	var input payloads.GetInterrelatedAddresses
 	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
 		return
 	}
 
 	start := time.Now()
 
-	addresses := cont.Service.GetToAddresses(input.From)
-
-	elapsed := time.Since(start)
-	fmt.Printf("Request took %s\n", elapsed)
-
-	c.JSON(http.StatusOK, addresses)
-}
-
-func (cont *Controller) GetFromAddresses(c *gin.Context) {
-	var input payloads.GetFromAddresses
-	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
-		return
-	}
-
-	start := time.Now()
-
-	addresses := cont.Service.GetFromAddresses(input.To)
+	addresses := cont.Service.GetInterrelatedAddresses(input.Address)
 
 	elapsed := time.Since(start)
 	fmt.Printf("Request took %s\n", elapsed)

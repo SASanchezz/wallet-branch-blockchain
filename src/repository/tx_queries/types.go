@@ -29,6 +29,11 @@ type RelationshipData struct {
 	To   *common.Address `json:"to"`
 }
 
+type InterrelatedAddresses struct {
+	FromAddresses []string `json:"from"`
+	ToAddresses   []string `json:"to"`
+}
+
 type Branch []*NodeData
 
 type Branches []*Branch

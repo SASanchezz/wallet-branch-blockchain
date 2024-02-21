@@ -63,38 +63,31 @@ func (r *Repository) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.B
 	return &parsedTransactions
 }
 
-func (r *Repository) GetToAddresses(from *common.Address) *common.Addresses {
+func (r *Repository) GetInterrelatedAddresses(address *common.Address) tx_queries.InterrelatedAddresses {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return tx_queries.GetToAddresses(tx, from), nil
+		return tx_queries.GetInterrelatedAddresses(tx, address), nil
 	})
 	if err != nil {
 		panic(err)
 	}
-	records := result.([]*neo4j.Record)
-	addresses := make(common.Addresses, len(records))
-	for i, record := range records {
-		rel, _ := record.Get("rels")
-		addresses[i] = mapAddress(rel.(dbtype.Relationship).Props, "to")
+	record := result.([]*neo4j.Record)
+
+	if len(record) == 0 {
+		return tx_queries.InterrelatedAddresses{
+			FromAddresses: []string{},
+			ToAddresses:   []string{},
+		}
 	}
 
-	return &addresses
-}
+	toAddressesRecord, _ := record[0].Get("toAddresses")
+	fromAddressesRecord, _ := record[0].Get("fromAddresses")
 
-func (r *Repository) GetFromAddresses(to *common.Address) *common.Addresses {
-	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		return tx_queries.GetFromAddresses(tx, to), nil
-	})
-	if err != nil {
-		panic(err)
-	}
-	records := result.([]*neo4j.Record)
-	addresses := make(common.Addresses, len(records))
-	for i, record := range records {
-		rel, _ := record.Get("rels")
-		addresses[i] = mapAddress(rel.(dbtype.Relationship).Props, "from")
+	interrelatedAddresses := tx_queries.InterrelatedAddresses{
+		FromAddresses: mapAddresses(toAddressesRecord.([]interface{})),
+		ToAddresses:   mapAddresses(fromAddressesRecord.([]interface{})),
 	}
 
-	return &addresses
+	return interrelatedAddresses
 }
 
 func (r *Repository) GetTransaction(hash *common.Hash) *tx_queries.NodeData {
