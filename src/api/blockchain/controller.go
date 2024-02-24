@@ -20,15 +20,15 @@ func NewController(blService *Service) *Controller {
 	return &Controller{blService}
 }
 
-func (cont *Controller) GetInterrelatedAddresses(c *gin.Context) {
-	var input payloads.GetInterrelatedAddresses
+func (cont *Controller) GInterrelatedAddresses(c *gin.Context) {
+	var input payloads.GInterrelatedAddresses
 	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
 		return
 	}
 
 	start := time.Now()
 
-	addresses := cont.Service.GetInterrelatedAddresses(input.Address)
+	addresses := cont.Service.GInterrelatedAddresses(input.Address)
 
 	elapsed := time.Since(start)
 	fmt.Printf("Request took %s\n", elapsed)
@@ -47,13 +47,14 @@ func (cont *Controller) GetByHash(c *gin.Context) {
 	c.JSON(http.StatusOK, transaction)
 }
 
-func (cont *Controller) GetBranch(c *gin.Context) {
-	var input payloads.GetBranch //TODO: refactoring place
-	if parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c); !(parseOk && validOk) {
+func (cont *Controller) GBranch(c *gin.Context) {
+	var input payloads.GBranch
+	parseOk, validOk := utilities.ParseInput(&input, c), utilities.ValidateInput(input, c)
+	if !(parseOk && validOk) {
 		return
 	}
 
-	getBranchParams := tx_queries.GetBranchParams{
+	getBranchParams := tx_queries.GBranchParams{
 		From:   common.StringToAddress(input.From),
 		To:     common.StringToAddress(input.To),
 		Limit:  &input.Limit,
@@ -61,13 +62,13 @@ func (cont *Controller) GetBranch(c *gin.Context) {
 		After:  &input.After,
 	}
 
-	branch := cont.Service.GetBranch(&getBranchParams)
+	branch := cont.Service.GBranch(&getBranchParams)
 
 	c.JSON(http.StatusOK, branch)
 }
 
-func (cont *Controller) GetAddresses(c *gin.Context) {
-	addresses := cont.Service.GetAddresses()
+func (cont *Controller) GAddresses(c *gin.Context) {
+	addresses := cont.Service.GAddresses()
 
 	c.JSON(http.StatusOK, addresses)
 }

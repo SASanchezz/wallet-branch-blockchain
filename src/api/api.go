@@ -15,9 +15,9 @@ func Run() {
 	blockchainController := blockchain.NewController(blockchain.NewService())
 
 	router.GET("/", blockchainController.GetByHash)
-	router.GET("/branch", blockchainController.GetBranch)
-	router.GET("/interrelated", blockchainController.GetInterrelatedAddresses)
-	router.GET("/addresses", blockchainController.GetAddresses)
+	router.GET("/branch", blockchainController.GBranch)
+	router.GET("/interrelated", blockchainController.GInterrelatedAddresses)
+	router.GET("/addresses", blockchainController.GAddresses)
 
 	router.Run("127.0.0.1:8080")
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func GetTransaction(dbTx neo4j.ManagedTransaction, txHash *common.Hash) *neo4j.Record {
+func GTransaction(dbTx neo4j.ManagedTransaction, txHash *common.Hash) *neo4j.Record {
 	params := map[string]interface{}{
 		"hash": txHash.ToString(),
 	}

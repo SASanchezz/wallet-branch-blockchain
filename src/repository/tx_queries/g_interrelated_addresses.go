@@ -8,7 +8,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func GetInterrelatedAddresses(dbTx neo4j.ManagedTransaction, address *common.Address) []*neo4j.Record {
+func GInterrelatedAddresses(dbTx neo4j.ManagedTransaction, address *common.Address) []*neo4j.Record {
 	params := map[string]interface{}{
 		"rootHash": src.GenesisTxHash.ToString(),
 		"address":  address.ToString(),

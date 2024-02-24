@@ -13,16 +13,16 @@ func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) GetInterrelatedAddresses(address string) tx_queries.InterrelatedAddresses {
-	addresses := transaction.New().GetInterrelatedAddresses(common.StringToAddress(address))
+func (s *Service) GInterrelatedAddresses(address string) tx_queries.InterrelatedAddresses {
+	addresses := transaction.New().GInterrelatedAddresses(common.StringToAddress(address))
 	return addresses
 }
 
 func (s *Service) GetByHash(hash string) *tx_queries.NodeData {
-	return transaction.New().GetTransaction(common.StringToMyHash(hash))
+	return transaction.New().GTransaction(common.StringToMyHash(hash))
 }
 
-func (s *Service) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Branch {
+func (s *Service) GBranch(params *tx_queries.GBranchParams) *tx_queries.Branch {
 	if *params.After == 0 {
 		*params.After = 0
 	}
@@ -33,11 +33,11 @@ func (s *Service) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Bran
 		*params.Limit = 100
 	}
 
-	branch := transaction.New().GetBranch(params)
+	branch := transaction.New().GBranch(params)
 	return branch
 }
 
-func (s *Service) GetAddresses() []string {
-	addresses := transaction.New().GetAddresses()
+func (s *Service) GAddresses() []string {
+	addresses := transaction.New().GAddresses()
 	return addresses
 }

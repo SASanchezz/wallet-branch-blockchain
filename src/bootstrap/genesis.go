@@ -8,7 +8,7 @@ import (
 func CreateGenesisBlock() {
 	ts := transaction.New()
 	defer ts.Close()
-	if ts.GetTransaction(src.GenesisTxHash) == nil {
+	if ts.GTransaction(src.GenesisTxHash) == nil {
 		ts.CreateGenesisBlock()
 	}
 }

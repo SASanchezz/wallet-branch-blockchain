@@ -5,7 +5,7 @@ import (
 	"wallet-branch-blockchain/src/common"
 )
 
-type GetBranchParams struct {
+type GBranchParams struct {
 	From   *common.Address
 	To     *common.Address
 	Limit  *int64
@@ -15,8 +15,6 @@ type GetBranchParams struct {
 
 type NodeData struct {
 	Hash                 *string  `json:"hash"`
-	From                 *string  `json:"from"`
-	To                   *string  `json:"to"`
 	Gas                  *uint64  `json:"gas"`
 	GasPrice             *big.Int `json:"gasPrice"`
 	MaxFeePerGas         *big.Int `json:"maxFeePerGas"`

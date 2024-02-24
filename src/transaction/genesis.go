@@ -30,7 +30,7 @@ func (ts *TransactionService) CreateGenesisBlock() {
 	dbTransaction, _ := ts.Repository.Session.BeginTransaction(ts.Repository.Ctx, func(*neo4j.TransactionConfig) {})
 	defer dbTransaction.Close(ts.Repository.Ctx)
 
-	tx_queries.SaveTransactionQuery(dbTransaction, &genesisTx)
+	tx_queries.CTransactionN(dbTransaction, &genesisTx)
 
 	err := dbTransaction.Commit(ts.Repository.Ctx)
 	if err != nil {

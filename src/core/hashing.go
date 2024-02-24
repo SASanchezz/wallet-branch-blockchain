@@ -27,7 +27,7 @@ func GetHash(x interface{}) *common.Hash {
 	return common.StringToMyHash(hex.EncodeToString(buf))
 }
 
-func GetBranchKey(from *common.Address, to *common.Address) *common.BranchKey {
+func GBranchKey(from *common.Address, to *common.Address) *common.BranchKey {
 	branchKey := common.BranchKey{}
 	copy(branchKey[:common.AddressLength], from[:])
 	branchKey[common.AddressLength] = '-'

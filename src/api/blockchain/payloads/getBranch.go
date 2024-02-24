@@ -2,7 +2,7 @@ package payloads
 
 import "wallet-branch-blockchain/src/common"
 
-type GetBranch struct {
+type GBranch struct {
 	From   string `form:"from" binding:"required"`
 	To     string `form:"to" binding:"required"`
 	Before int64  `form:"before"`
@@ -10,7 +10,7 @@ type GetBranch struct {
 	Limit  int64  `form:"limit"`
 }
 
-func (payload GetBranch) Validate() (bool, string) {
+func (payload GBranch) Validate() (bool, string) {
 	if len(payload.From) != common.AddressLength {
 		return false, "'from' address is invalid"
 	}

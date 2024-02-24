@@ -7,7 +7,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func SaveTransactionQuery(dbTx neo4j.ExplicitTransaction, transactionData *common.Transaction) {
+func CTransactionN(dbTx neo4j.ExplicitTransaction, transactionData *common.Transaction) {
 	params := map[string]interface{}{
 		"hash":                 transactionData.Hash.ToString(),
 		"parentHash":           transactionData.ParentHash.ToString(),

@@ -21,7 +21,7 @@ func (ts *TransactionService) Close() {
 }
 
 func (ts *TransactionService) GenerateTransaction(transaction *common.Transaction) *common.Transaction {
-	lastTransaction, _ := ts.GetLastTransaction(transaction.From, transaction.To)
+	lastTransaction, _ := ts.GLastTransaction(transaction.From, transaction.To)
 	transaction.ParentHash = common.StringToMyHash(*lastTransaction.Hash)
 
 	return transaction
@@ -31,22 +31,22 @@ func (ts *TransactionService) SaveTransaction(transactionData *common.Transactio
 	ts.Repository.SaveTransaction(transactionData, true)
 }
 
-func (ts *TransactionService) GetLastTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
-	return ts.Repository.GetLastTransaction(from, to)
+func (ts *TransactionService) GLastTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
+	return ts.Repository.GLastTransaction(from, to)
 }
 
-func (ts *TransactionService) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.Branch {
-	return ts.Repository.GetBranch(params)
+func (ts *TransactionService) GBranch(params *tx_queries.GBranchParams) *tx_queries.Branch {
+	return ts.Repository.GBranch(params)
 }
 
-func (ts *TransactionService) GetInterrelatedAddresses(address *common.Address) tx_queries.InterrelatedAddresses {
-	return ts.Repository.GetInterrelatedAddresses(address)
+func (ts *TransactionService) GInterrelatedAddresses(address *common.Address) tx_queries.InterrelatedAddresses {
+	return ts.Repository.GInterrelatedAddresses(address)
 }
 
-func (ts *TransactionService) GetTransaction(hash *common.Hash) *tx_queries.NodeData {
-	return ts.Repository.GetTransaction(hash)
+func (ts *TransactionService) GTransaction(hash *common.Hash) *tx_queries.NodeData {
+	return ts.Repository.GTransaction(hash)
 }
 
-func (ts *TransactionService) GetAddresses() []string {
-	return ts.Repository.GetAddresses()
+func (ts *TransactionService) GAddresses() []string {
+	return ts.Repository.GAddresses()
 }

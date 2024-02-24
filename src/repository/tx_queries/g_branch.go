@@ -7,7 +7,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func GetBranch(dbTx neo4j.ManagedTransaction, inputParams *GetBranchParams) []*neo4j.Record {
+func GBranch(dbTx neo4j.ManagedTransaction, inputParams *GBranchParams) []*neo4j.Record {
 	params := map[string]interface{}{
 		"rootHash": src.GenesisTxHash.ToString(),
 		"from":     inputParams.From.ToString(),

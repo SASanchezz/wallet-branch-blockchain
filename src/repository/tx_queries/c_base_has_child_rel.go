@@ -7,23 +7,26 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func CreateRelationshipQuery(
+func CBaseHasChildRelQuery(
 	dbTx neo4j.ExplicitTransaction,
-	parent *common.Hash,
+	parentHash *common.Hash,
 	childTransaction *common.Transaction,
 ) {
 	params := map[string]interface{}{
-		"parent": parent.ToString(),
+		"parent": parentHash.ToString(),
 		"child":  childTransaction.Hash.ToString(),
+		"from":   childTransaction.From.ToString(),
+		"to":     childTransaction.To.ToString(),
 	}
+
 	template := "MATCH (t1:Transaction {hash: $parent}) " +
 		"MATCH (t2:Transaction {hash: $child})" +
-		"CREATE (t1)-[:HAS_CHILD]->(t2)"
+		"CREATE (t1)-[:HAS_CHILD {from: $from, to: $to}]->(t2)"
 
 	query := core.NewQueryBuilder(dbTx).
 		WithParams(params).
 		WithTemplate(template).
-		WithLogPath("../logs/create_relationship.txt").
+		WithLogPath("../logs/create_base_relationship.txt").
 		Build()
 
 	query.Run()
