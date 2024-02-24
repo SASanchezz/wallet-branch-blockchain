@@ -58,7 +58,7 @@ func (r *Repository) GetBranch(params *tx_queries.GetBranchParams) *tx_queries.B
 	}
 	records := result.([]*neo4j.Record)
 
-	parsedTransactions := *parseTransactions(records, "allNodes", int8(*params.Limit))
+	parsedTransactions := *parseTransactions(records, "allNodes")
 
 	return &parsedTransactions
 }
@@ -83,8 +83,8 @@ func (r *Repository) GetInterrelatedAddresses(address *common.Address) tx_querie
 	fromAddressesRecord, _ := record[0].Get("fromAddresses")
 
 	interrelatedAddresses := tx_queries.InterrelatedAddresses{
-		FromAddresses: mapAddresses(toAddressesRecord.([]interface{})),
-		ToAddresses:   mapAddresses(fromAddressesRecord.([]interface{})),
+		FromAddresses: mapAddresses(fromAddressesRecord.([]interface{})),
+		ToAddresses:   mapAddresses(toAddressesRecord.([]interface{})),
 	}
 
 	return interrelatedAddresses

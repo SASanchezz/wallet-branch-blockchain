@@ -6,7 +6,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func parseTransactions(records []*neo4j.Record, key string, limit int8) *tx_queries.Branch {
+func parseTransactions(records []*neo4j.Record, key string) *tx_queries.Branch {
 	transactions := tx_queries.Branch{}
 	for _, record := range records {
 		allNodes, _ := record.Get(key)

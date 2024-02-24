@@ -19,7 +19,7 @@ func GetAddresses(dbTx neo4j.ManagedTransaction) *neo4j.Record {
 	query := core.NewQueryBuilder(dbTx).
 		WithParams(params).
 		WithTemplate(template).
-		WithLogPath("../logs/get_address.txt").
+		WithLogPath("../logs/get_addresses.txt").
 		Build()
 
 	return query.Run()[0]
