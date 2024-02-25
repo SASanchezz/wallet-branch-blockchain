@@ -11,7 +11,13 @@ func GTransaction(dbTx neo4j.ManagedTransaction, txHash *common.Hash) *neo4j.Rec
 	params := map[string]interface{}{
 		"hash": txHash.ToString(),
 	}
-	template := "MATCH (t:Transaction {hash: toString($hash)}) RETURN t"
+	template := "MATCH (t:BaseTransaction) " +
+		"WHERE t.hash = $hash " +
+		"RETURN t " +
+		"UNION " +
+		"MATCH (t:Transaction) " +
+		"WHERE t.hash = $hash " +
+		"RETURN t"
 
 	query := core.NewQueryBuilder(dbTx).
 		WithParams(params).

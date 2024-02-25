@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/common"
 	"wallet-branch-blockchain/src/database"
 	"wallet-branch-blockchain/src/repository/tx_queries"
@@ -27,7 +26,7 @@ func (r *Repository) Close() {
 	r.Session.Close(r.Ctx)
 }
 
-func (r *Repository) SaveTransaction(transactionData *common.Transaction, withRelationship bool) {
+func (r *Repository) CTransaction(transactionData *common.Transaction) {
 	dbTransaction, err := r.Session.BeginTransaction(r.Ctx, func(*neo4j.TransactionConfig) {})
 	if err != nil {
 		panic(err)
@@ -35,14 +34,21 @@ func (r *Repository) SaveTransaction(transactionData *common.Transaction, withRe
 	defer dbTransaction.Close(r.Ctx)
 
 	tx_queries.CTransactionN(dbTransaction, transactionData)
+	tx_queries.CHasChildRelQuery(dbTransaction, transactionData.ParentHash, transactionData)
 
-	if withRelationship {
-		if *transactionData.ParentHash != *src.GenesisTxHash {
-			tx_queries.CHasChildRelQueryQuery(dbTransaction, transactionData.ParentHash, transactionData)
-		} else {
-			tx_queries.CBaseHasChildRelQuery(dbTransaction, src.GenesisTxHash, transactionData)
-		}
+	if err := dbTransaction.Commit(r.Ctx); err != nil {
+		panic(err)
 	}
+}
+
+func (r *Repository) CBaseTransaction(transactionData *common.Transaction) {
+	dbTransaction, err := r.Session.BeginTransaction(r.Ctx, func(*neo4j.TransactionConfig) {})
+	if err != nil {
+		panic(err)
+	}
+	defer dbTransaction.Close(r.Ctx)
+
+	tx_queries.CBaseTransactionN(dbTransaction, transactionData)
 
 	if err := dbTransaction.Commit(r.Ctx); err != nil {
 		panic(err)
@@ -111,7 +117,7 @@ func (r *Repository) GTransaction(hash *common.Hash) *tx_queries.NodeData {
 	return mapTransaction(t.(dbtype.Node).Props)
 }
 
-func (r *Repository) GLastTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
+func (r *Repository) GLastTransaction(from *common.Address, to *common.Address) *tx_queries.NodeData {
 	result, err := r.Session.ExecuteRead(r.Ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
 		return tx_queries.GLastTransaction(tx, from, to), nil
 	})
@@ -121,13 +127,12 @@ func (r *Repository) GLastTransaction(from *common.Address, to *common.Address) 
 
 	record := result.(*neo4j.Record)
 	lastNode, _ := record.Get("lastNode")
-	rel, _ := record.Get("rel")
 
-	if rel == nil {
-		return mapTransaction(lastNode.(dbtype.Node).Props), nil
+	if lastNode == nil {
+		return nil
 	}
 
-	return mapTransaction(lastNode.(dbtype.Node).Props), mapRelationship(rel.(dbtype.Relationship).Props)
+	return mapTransaction(lastNode.(dbtype.Node).Props)
 }
 
 func (r *Repository) GAddresses() []string {

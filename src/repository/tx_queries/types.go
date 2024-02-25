@@ -14,6 +14,8 @@ type GBranchParams struct {
 }
 
 type NodeData struct {
+	From                 *string  `json:"from"`
+	To                   *string  `json:"to"`
 	Hash                 *string  `json:"hash"`
 	Gas                  *uint64  `json:"gas"`
 	GasPrice             *big.Int `json:"gasPrice"`

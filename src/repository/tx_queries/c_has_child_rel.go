@@ -7,7 +7,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func CHasChildRelQueryQuery(
+func CHasChildRelQuery(
 	dbTx neo4j.ExplicitTransaction,
 	parent *common.Hash,
 	childTransaction *common.Transaction,
@@ -16,8 +16,9 @@ func CHasChildRelQueryQuery(
 		"parent": parent.ToString(),
 		"child":  childTransaction.Hash.ToString(),
 	}
-	template := "MATCH (t1:Transaction {hash: $parent}) " +
-		"MATCH (t2:Transaction {hash: $child})" +
+	template := "MATCH (t2:Transaction {hash: $child}), (t1) " +
+		"WHERE ANY(x IN ['BaseTransaction', 'Transaction'] WHERE x IN labels(t1)) " +
+		"AND t1.hash = $parent " +
 		"CREATE (t1)-[:HAS_CHILD]->(t2)"
 
 	query := core.NewQueryBuilder(dbTx).

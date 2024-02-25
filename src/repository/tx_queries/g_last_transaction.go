@@ -1,7 +1,6 @@
 package tx_queries
 
 import (
-	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/common"
 	"wallet-branch-blockchain/src/repository/core"
 
@@ -10,17 +9,14 @@ import (
 
 func GLastTransaction(dbTx neo4j.ManagedTransaction, from *common.Address, to *common.Address) *neo4j.Record {
 	params := map[string]interface{}{
-		"rootHash": src.GenesisTxHash.ToString(),
-		"from":     from.ToString(),
-		"to":       to.ToString(),
+		"from": from.ToString(),
+		"to":   to.ToString(),
 	}
-	template := "MATCH (r:Transaction {hash: toString($rootHash)}) " +
-		"OPTIONAL MATCH (r)-[rel:HAS_CHILD]->(t1:Transaction) " +
-		"WHERE (rel.from = toString($from) AND rel.to = toString($to)) " +
-		"OPTIONAL MATCH (t1)-[:HAS_CHILD*]->(t2:Transaction) " +
-		"WITH rel, COLLECT(DISTINCT r) + COLLECT(DISTINCT t1) + COLLECT(DISTINCT t2) AS allNodes " +
-		"WITH rel, last(allNodes) AS lastNode " +
-		"RETURN rel, lastNode"
+	template := "OPTIONAL MATCH (b:BaseTransaction {from: $from, to: $to}) " +
+		"OPTIONAL MATCH path = (b)-[:HAS_CHILD*]->(t:Transaction) " +
+		"WITH COLLECT(DISTINCT b) + COLLECT(DISTINCT t) AS allNodes " +
+		"WITH last(allNodes) AS lastNode " +
+		"RETURN lastNode"
 
 	query := core.NewQueryBuilder(dbTx).
 		WithParams(params).

@@ -17,6 +17,16 @@ func mapTransactions(properties []interface{}) *tx_queries.Branch {
 }
 
 func mapTransaction(properties map[string]any) *tx_queries.NodeData {
+	var from string
+	var to string
+
+	if fromF := properties["from"]; fromF != nil {
+		from = fromF.(string)
+	}
+	if toF := properties["to"]; toF != nil {
+		to = toF.(string)
+	}
+
 	hash := properties["hash"].(string)
 	gas := uint64(properties["gas"].(int64))
 	gasPrice := properties["gasPrice"].(string)
@@ -27,6 +37,8 @@ func mapTransaction(properties map[string]any) *tx_queries.NodeData {
 	nonce := uint64(properties["nonce"].(int64))
 
 	return &tx_queries.NodeData{
+		From:                 &from,
+		To:                   &to,
 		Hash:                 &hash,
 		Gas:                  &gas,
 		GasPrice:             common.StringToBigInt(gasPrice),

@@ -29,7 +29,7 @@ func (q Query) Run() []*neo4j.Record {
 
 	elapsed := time.Since(start)
 	logger := logger.Logger{Path: q.logPath}
-	logger.LogInt64(int64(elapsed / time.Millisecond))
+	logger.LogInt64(int64(elapsed / time.Microsecond))
 
 	return records
 }

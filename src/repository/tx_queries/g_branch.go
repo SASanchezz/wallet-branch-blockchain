@@ -1,7 +1,6 @@
 package tx_queries
 
 import (
-	"wallet-branch-blockchain/src"
 	"wallet-branch-blockchain/src/repository/core"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
@@ -9,24 +8,20 @@ import (
 
 func GBranch(dbTx neo4j.ManagedTransaction, inputParams *GBranchParams) []*neo4j.Record {
 	params := map[string]interface{}{
-		"rootHash": src.GenesisTxHash.ToString(),
-		"from":     inputParams.From.ToString(),
-		"to":       inputParams.To.ToString(),
-		"after":    inputParams.After,
-		"before":   inputParams.Before,
-		"limit":    inputParams.Limit,
+		"from":   inputParams.From.ToString(),
+		"to":     inputParams.To.ToString(),
+		"after":  inputParams.After,
+		"before": inputParams.Before,
+		"limit":  inputParams.Limit,
 	}
-	template := "MATCH (r:Transaction {hash: toString($rootHash)}) " +
-		"OPTIONAL MATCH (r)-[rel:HAS_CHILD]->(t1:Transaction) " +
-		"WHERE (rel.from = toString($from) AND rel.to = toString($to)) " +
-		// "OR (rel.to = toString($from) AND rel.from = toString($to)) " +
+	template := "MATCH (b:BaseTransaction {from: $from, to: $to}) " +
 
-		"OPTIONAL MATCH (t1)-[:HAS_CHILD*]->(t2:Transaction) " +
-		"WHERE (t2.timestamp >= $after AND t2.timestamp <= $before) " +
-		"WITH r, t1, t2 " +
+		"OPTIONAL MATCH (b)-[:HAS_CHILD*]->(t:Transaction) " +
+		"WHERE (t.timestamp >= $after AND t.timestamp <= $before) " +
+		"WITH b, t " +
 
-		"ORDER BY t2.timestamp ASC " +
-		"WITH COLLECT(DISTINCT t2) + COLLECT(DISTINCT t1) AS allNodes " +
+		"ORDER BY t.timestamp ASC " +
+		"WITH COLLECT(DISTINCT b) + COLLECT(DISTINCT t) AS allNodes " +
 		"RETURN allNodes[0..$limit] as allNodes"
 
 	query := core.NewQueryBuilder(dbTx).

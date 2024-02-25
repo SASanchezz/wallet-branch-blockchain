@@ -21,17 +21,23 @@ func (ts *TransactionService) Close() {
 }
 
 func (ts *TransactionService) GenerateTransaction(transaction *common.Transaction) *common.Transaction {
-	lastTransaction, _ := ts.GLastTransaction(transaction.From, transaction.To)
-	transaction.ParentHash = common.StringToMyHash(*lastTransaction.Hash)
+	lastTransaction := ts.GLastTransaction(transaction.From, transaction.To)
+	if lastTransaction != nil {
+		transaction.ParentHash = common.StringToMyHash(*lastTransaction.Hash)
+	}
 
 	return transaction
 }
 
 func (ts *TransactionService) SaveTransaction(transactionData *common.Transaction) {
-	ts.Repository.SaveTransaction(transactionData, true)
+	if transactionData.ParentHash != nil {
+		ts.Repository.CTransaction(transactionData)
+	} else {
+		ts.Repository.CBaseTransaction(transactionData)
+	}
 }
 
-func (ts *TransactionService) GLastTransaction(from *common.Address, to *common.Address) (*tx_queries.NodeData, *tx_queries.RelationshipData) {
+func (ts *TransactionService) GLastTransaction(from *common.Address, to *common.Address) *tx_queries.NodeData {
 	return ts.Repository.GLastTransaction(from, to)
 }
 
